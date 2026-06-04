@@ -178,16 +178,28 @@ pnpm test:watch       # Watch mode for development
 
 ## 🚀 Deployment
 
+### Vercel (recommended for managed hosting)
+
 BrumKit is optimized for deployment on **Vercel**.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/buildinclicks/brumkit)
-
-### Instructions:
 
 1. Push your code to GitHub.
 2. Link your repository to Vercel.
 3. Add your environment variables in the Vercel Dashboard.
 4. Set the build command to `pnpm run build`.
+
+See the [Vercel Deployment Guide](docs/deployment/vercel-deployment-guide.md) for full instructions.
+
+### Docker (self-hosted)
+
+BrumKit ships a production-grade multi-stage `Dockerfile` and a `docker-compose.full.yml` that spins up the complete stack (app + PostgreSQL + Redis) with a single command.
+
+```bash
+docker compose -f docker-compose.full.yml --env-file .env.production up -d
+```
+
+See the [Self-Hosting with Docker guide](docs/deployment/self-hosting-docker.md) for prerequisites, migration steps, cron job setup, and update instructions.
 
 ---
 

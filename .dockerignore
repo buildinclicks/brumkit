@@ -1,0 +1,71 @@
+# =============================================================================
+# .dockerignore — BrumKit
+# Keeps the Docker build context lean and secrets out of the image.
+# DO NOT exclude: pnpm-lock.yaml, turbo.json, packages/, apps/
+# =============================================================================
+
+# ── Dependencies ──────────────────────────────────────────────────────────────
+node_modules
+**/node_modules
+
+# ── Build outputs ─────────────────────────────────────────────────────────────
+.next
+**/.next
+dist
+**/dist
+
+# ── Turbo cache ───────────────────────────────────────────────────────────────
+.turbo
+**/.turbo
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ── Documentation (not needed inside the image) ───────────────────────────────
+*.md
+docs/
+.internal-docs/
+.private-docs/
+
+# ── Test files ────────────────────────────────────────────────────────────────
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+coverage/
+**/coverage/
+
+# ── IDE and local tooling ─────────────────────────────────────────────────────
+.cursor/
+.vscode/
+.idea/
+
+# ── Environment / secrets (must be injected at runtime, never baked in) ───────
+.env
+.env.*
+**/.env
+**/.env.*
+
+# ── OS artefacts ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── CI / GitHub ───────────────────────────────────────────────────────────────
+.github/
+
+# ── Husky hooks (dev-only) ────────────────────────────────────────────────────
+.husky/
+
+# ── Prettier / ESLint config (not needed at runtime) ─────────────────────────
+.prettierrc
+.prettierignore
+eslint.config.js
+
+# ── IMPORTANT: the following are NOT excluded and must reach the build context ─
+# pnpm-lock.yaml   — required for --frozen-lockfile
+# turbo.json       — required for turbo prune
+# packages/        — workspace packages consumed by apps/web
+# apps/            — the Next.js application source
+# pnpm-workspace.yaml

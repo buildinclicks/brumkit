@@ -1,0 +1,94 @@
+# =============================================================================
+# BrumKit — Full Production Stack
+# Services: Next.js App + PostgreSQL + Redis
+# Mailhog is intentionally excluded — use Resend for production email.
+#
+# Usage:
+#   docker compose -f docker-compose.full.yml --env-file .env.production up -d
+#
+# First-time database migration (run once before starting the stack):
+#   docker run --rm \
+#     --network bk-network \
+#     -e DATABASE_URL=$DATABASE_URL \
+#     -v $(pwd):/app \
+#     -w /app \
+#     brumkit-web \
+#     pnpm --filter @repo/database db:migrate:deploy
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16 — inherited from docker-compose.yml
+  # ---------------------------------------------------------------------------
+  postgres:
+    extends:
+      file: docker-compose.yml
+      service: postgres
+
+  # ---------------------------------------------------------------------------
+  # Redis 7 — inherited from docker-compose.yml
+  # ---------------------------------------------------------------------------
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
+
+  # ---------------------------------------------------------------------------
+  # BrumKit Web Application
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000/api}
+    container_name: bk-app
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      FROM_EMAIL: ${FROM_EMAIL}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      CRON_SECRET: ${CRON_SECRET}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --quiet --tries=1 --spider http://localhost:3000/api/auth/providers || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - brumkit
+
+# =============================================================================
+# Volumes (must be re-declared when using `extends` across files)
+# =============================================================================
+volumes:
+  postgres_data:
+    name: bk-postgres-data
+  redis_data:
+    name: bk-redis-data
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  brumkit:
+    name: bk-network
+    driver: bridge
