@@ -29,9 +29,9 @@
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vitest": "workspace:*",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^25.0.6",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "keywords": [
     "utilities",

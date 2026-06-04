@@ -40,11 +40,11 @@
     "@faker-js/faker": "^10.2.0",
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vitest": "workspace:*",
-    "@types/node": "^25.0.6",
+    "@types/node": "catalog:",
     "bcryptjs": "^3.0.3",
     "prisma": "^6.19.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

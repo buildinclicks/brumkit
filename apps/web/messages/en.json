@@ -41,56 +41,12 @@
       "bio_too_long": "Bio must not exceed 500 characters",
       "image_invalid_url": "Please enter a valid image URL"
     },
-    "article": {
-      "title_required": "Article title is required",
-      "title_too_long": "Title must not exceed 255 characters",
-      "content_required": "Article content is required",
-      "slug_required": "Slug is required",
-      "slug_invalid_format": "Slug can only contain lowercase letters, numbers, and hyphens",
-      "slug_too_long": "Slug must not exceed 255 characters",
-      "excerpt_too_long": "Excerpt must not exceed 500 characters",
-      "cover_image_invalid_url": "Please enter a valid cover image URL",
-      "meta_title_too_long": "Meta title must not exceed 60 characters",
-      "meta_description_too_long": "Meta description must not exceed 160 characters",
-      "tags_minimum": "Please select at least one tag",
-      "tags_maximum": "Maximum 10 tags allowed"
-    },
-    "tag": {
-      "name_required": "Tag name is required",
-      "name_too_short": "Tag name must be at least 2 characters",
-      "name_too_long": "Tag name must not exceed 50 characters",
-      "slug_required": "Tag slug is required",
-      "slug_invalid_format": "Slug can only contain lowercase letters, numbers, and hyphens",
-      "slug_too_long": "Slug must not exceed 100 characters",
-      "color_invalid_hex": "Please enter a valid hex color code"
-    },
-    "comment": {
-      "content_required": "Comment cannot be empty",
-      "content_too_short": "Comment must be at least 1 character",
-      "content_too_long": "Comment must not exceed 2000 characters",
-      "article_id_required": "Article ID is required"
-    },
     "notification": {
       "title_required": "Notification title is required",
       "title_too_long": "Title must not exceed 255 characters",
       "message_required": "Notification message is required",
       "link_invalid_url": "Please enter a valid URL",
       "link_too_long": "Link must not exceed 500 characters"
-    },
-    "follow": {
-      "follower_id_required": "Follower ID is required",
-      "following_id_required": "Following ID is required",
-      "self_not_allowed": "You cannot follow yourself"
-    },
-    "bookmark": {
-      "user_id_required": "User ID is required",
-      "article_id_required": "Article ID is required"
-    },
-    "reaction": {
-      "type_required": "Reaction type is required",
-      "type_invalid": "Invalid reaction type",
-      "user_id_required": "User ID is required",
-      "article_id_required": "Article ID is required"
     },
     "slug": {
       "invalid_format": "Slug can only contain lowercase letters, numbers, and hyphens",
@@ -301,7 +257,7 @@
       "suggestions": "You might want to check the URL or try one of these options:",
       "go_home": "Go to Home",
       "go_back": "Go Back",
-      "browse_articles": "Browse Articles",
+      "go_to_dashboard": "Go to Dashboard",
       "contact_support": "Contact Support"
     },
     "500": {
@@ -319,6 +275,13 @@
       "message": "If you believe this is an error, please contact support.",
       "go_home": "Go to Home",
       "go_back": "Go Back"
+    },
+    "unauthorized": {
+      "title": "Unauthorized",
+      "heading": "Access Denied",
+      "description": "You don't have the required permissions to view this page.",
+      "back_to_dashboard": "Back to Dashboard",
+      "go_home": "Go to Home"
     },
     "429": {
       "title": "Too Many Requests",

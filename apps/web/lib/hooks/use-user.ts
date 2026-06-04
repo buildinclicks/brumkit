@@ -7,7 +7,7 @@ import {
 import { useSession } from 'next-auth/react';
 
 import {
-  deleteUserAccount,
+  deleteAccount,
   getCurrentUserProfile,
   getUserProfile,
   getUserStats,
@@ -104,8 +104,8 @@ export function useDeleteAccount() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const result = await deleteUserAccount();
+    mutationFn: async (password: string) => {
+      const result = await deleteAccount({ password });
 
       if (!result.success) {
         throw new Error(result.error);

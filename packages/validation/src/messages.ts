@@ -61,41 +61,6 @@ export const ValidationMessages = {
   USER_IMAGE_INVALID: 'user.image_invalid_url',
 
   // ============================================
-  // ARTICLE
-  // ============================================
-  ARTICLE_TITLE_REQUIRED: 'article.title_required',
-  ARTICLE_TITLE_TOO_LONG: 'article.title_too_long',
-  ARTICLE_CONTENT_REQUIRED: 'article.content_required',
-  ARTICLE_SLUG_REQUIRED: 'article.slug_required',
-  ARTICLE_SLUG_INVALID: 'article.slug_invalid_format',
-  ARTICLE_SLUG_TOO_LONG: 'article.slug_too_long',
-  ARTICLE_EXCERPT_TOO_LONG: 'article.excerpt_too_long',
-  ARTICLE_COVER_IMAGE_INVALID: 'article.cover_image_invalid_url',
-  ARTICLE_META_TITLE_TOO_LONG: 'article.meta_title_too_long',
-  ARTICLE_META_DESC_TOO_LONG: 'article.meta_description_too_long',
-  ARTICLE_TAGS_MIN: 'article.tags_minimum',
-  ARTICLE_TAGS_MAX: 'article.tags_maximum',
-
-  // ============================================
-  // TAG
-  // ============================================
-  TAG_NAME_REQUIRED: 'tag.name_required',
-  TAG_NAME_TOO_SHORT: 'tag.name_too_short',
-  TAG_NAME_TOO_LONG: 'tag.name_too_long',
-  TAG_SLUG_REQUIRED: 'tag.slug_required',
-  TAG_SLUG_INVALID: 'tag.slug_invalid_format',
-  TAG_SLUG_TOO_LONG: 'tag.slug_too_long',
-  TAG_COLOR_INVALID: 'tag.color_invalid_hex',
-
-  // ============================================
-  // COMMENT
-  // ============================================
-  COMMENT_CONTENT_REQUIRED: 'comment.content_required',
-  COMMENT_CONTENT_TOO_SHORT: 'comment.content_too_short',
-  COMMENT_CONTENT_TOO_LONG: 'comment.content_too_long',
-  COMMENT_ARTICLE_ID_REQUIRED: 'comment.article_id_required',
-
-  // ============================================
   // NOTIFICATION
   // ============================================
   NOTIFICATION_TITLE_REQUIRED: 'notification.title_required',
@@ -103,27 +68,6 @@ export const ValidationMessages = {
   NOTIFICATION_MESSAGE_REQUIRED: 'notification.message_required',
   NOTIFICATION_LINK_INVALID: 'notification.link_invalid_url',
   NOTIFICATION_LINK_TOO_LONG: 'notification.link_too_long',
-
-  // ============================================
-  // FOLLOW
-  // ============================================
-  FOLLOW_FOLLOWER_ID_REQUIRED: 'follow.follower_id_required',
-  FOLLOW_FOLLOWING_ID_REQUIRED: 'follow.following_id_required',
-  FOLLOW_SELF_NOT_ALLOWED: 'follow.self_not_allowed',
-
-  // ============================================
-  // BOOKMARK
-  // ============================================
-  BOOKMARK_USER_ID_REQUIRED: 'bookmark.user_id_required',
-  BOOKMARK_ARTICLE_ID_REQUIRED: 'bookmark.article_id_required',
-
-  // ============================================
-  // REACTION
-  // ============================================
-  REACTION_TYPE_REQUIRED: 'reaction.type_required',
-  REACTION_TYPE_INVALID: 'reaction.type_invalid',
-  REACTION_USER_ID_REQUIRED: 'reaction.user_id_required',
-  REACTION_ARTICLE_ID_REQUIRED: 'reaction.article_id_required',
 
   // ============================================
   // SLUG

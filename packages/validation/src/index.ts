@@ -7,7 +7,6 @@ export * from './rules/slug.rules';
 // Entity schemas
 export * from './schemas/auth.schema';
 export * from './schemas/user.schema';
-export * from './schemas/article.schema';
 export * from './schemas/email-change.schema';
 export * from './schemas/account-deletion.schema';
 export * from './schemas/notification.schema';

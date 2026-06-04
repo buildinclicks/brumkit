@@ -42,7 +42,7 @@ export default async function NotFound() {
               <Link href="/">{t('go_home')}</Link>
             </Button>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/articles">{t('browse_articles')}</Link>
+              <Link href="/dashboard">{t('go_to_dashboard')}</Link>
             </Button>
           </div>
         </CardContent>

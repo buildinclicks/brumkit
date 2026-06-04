@@ -1,6 +1,9 @@
 import { authMiddleware } from '@repo/auth/edge';
+import { NextResponse } from 'next/server';
 
-export default authMiddleware({
+import type { NextRequest } from 'next/server';
+
+const innerMiddleware = authMiddleware({
   publicRoutes: [
     '/',
     '/verify-email',
@@ -14,8 +17,19 @@ export default authMiddleware({
     '/notifications/*',
     '/logout',
   ],
-  adminRoutes: ['/admin/*'],
 });
+
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Admin pages are not implemented in this OSS release.
+  // Redirect all /admin/* requests to /unauthorized to avoid silent 404s.
+  if (pathname.startsWith('/admin')) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+
+  return innerMiddleware(request);
+}
 
 export const config = {
   matcher: [

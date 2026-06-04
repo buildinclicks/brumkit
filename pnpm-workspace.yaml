@@ -1,3 +1,42 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+catalog:
+  # Core React
+  react: ^19.2.7
+  react-dom: ^19.2.7
+  '@types/react': ^19.2.8
+  '@types/react-dom': ^19.2.3
+
+  # TypeScript
+  typescript: ^5.9.3
+  '@types/node': ^25.0.6
+
+  # Styling
+  tailwindcss: ^4.3.0
+
+  # Validation
+  zod: ^3.23.8
+
+  # Forms
+  react-hook-form: ^7.77.0
+  '@hookform/resolvers': ^5.2.2
+
+  # Notifications
+  sonner: ^1.7.4
+
+  # Testing
+  vitest: ^4.1.8
+  '@vitest/coverage-v8': ^4.1.8
+  '@vitest/ui': ^4.1.8
+
+  # Linting
+  eslint: ^10.4.1
+
+  # Build tool (peer dep for vitest/vitejs-plugin-react)
+  vite: ^7.3.5
+
+  # Redis
+  ioredis: ^5.11.0
+  '@upstash/redis': ^1.38.0

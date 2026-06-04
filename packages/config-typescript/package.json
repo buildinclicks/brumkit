@@ -11,8 +11,8 @@
     "node.json"
   ],
   "devDependencies": {
-    "@types/node": "^25.0.6",
-    "@types/react": "^19.2.8",
-    "typescript": "^5.9.3"
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "typescript": "catalog:"
   }
 }

@@ -37,7 +37,9 @@
     "vitest": "^4.0.0"
   },
   "devDependencies": {
-    "@repo/config-typescript": "workspace:*"
+    "@repo/config-typescript": "workspace:*",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "keywords": [
     "vitest",

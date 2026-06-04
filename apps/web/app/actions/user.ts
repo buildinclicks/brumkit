@@ -215,35 +215,6 @@ export async function updateUserProfile(
 }
 
 /**
- * Delete user account
- */
-export async function deleteUserAccount(): Promise<ActionResult> {
-  try {
-    const user = await getCurrentUser();
-
-    if (!user?.id) {
-      return {
-        success: false,
-        error: 'Not authenticated',
-      };
-    }
-
-    // Delete user and all related data (cascading deletes handled by Prisma schema)
-    await db.user.delete({
-      where: { id: user.id },
-    });
-
-    return { success: true, data: undefined };
-  } catch (error) {
-    console.error('Delete user account error:', error);
-    return {
-      success: false,
-      error: 'Failed to delete account',
-    };
-  }
-}
-
-/**
  * Get user statistics
  */
 export async function getUserStats(userId: string): Promise<

@@ -87,7 +87,7 @@ BrumKit OSS is the **"Lite"** foundation, focused on the core authentication, au
 1. **Clone the repository:**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/buildinclicks/brumkit.git
    cd brumkit
    ```
 
@@ -123,7 +123,7 @@ BrumKit OSS is the **"Lite"** foundation, focused on the core authentication, au
    pnpm dev
    ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000).
+The application will be available at [http://localhost:4000](http://localhost:4000).
 
 ---
 
@@ -141,7 +141,7 @@ brumkit/
 │   ├── ui/                  # Shared Shadcn components
 │   ├── validation/          # Zod schemas
 │   ├── types/               # Shared TS types
-│   └── branding/            # Brand assets
+│   └── utils/               # Shared utilities
 └── docker/                  # Local infrastructure config
 ```
 
@@ -153,7 +153,7 @@ The root `.env.development` file manages both the web app and the Docker infrast
 
 | Variable              | Description                        | Default                 |
 | --------------------- | ---------------------------------- | ----------------------- |
-| `NEXT_PUBLIC_APP_URL` | The URL of your application        | `http://localhost:3000` |
+| `NEXT_PUBLIC_APP_URL` | The URL of your application        | `http://localhost:4000` |
 | `DATABASE_URL`        | Connection string for Prisma       | `postgresql://...`      |
 | `NEXTAUTH_SECRET`     | Secret for session encryption      | `replace-me`            |
 | `REDIS_URL`           | Redis connection for rate limiting | `redis://...`           |
@@ -180,7 +180,7 @@ pnpm test:watch       # Watch mode for development
 
 BrumKit is optimized for deployment on **Vercel**.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=<repository-url>)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/buildinclicks/brumkit)
 
 ### Instructions:
 
@@ -194,7 +194,7 @@ BrumKit is optimized for deployment on **Vercel**.
 ## 🤝 Contributing & Support
 
 - **Contributing**: Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our TDD flow.
-- **Issues**: Report bugs in [GitHub Issues](<repository-url>/issues).
+- **Issues**: Report bugs in [GitHub Issues](https://github.com/buildinclicks/brumkit/issues).
 - **Documentation**: Explore the [docs/](docs/) folder for detailed guides.
 
 ---

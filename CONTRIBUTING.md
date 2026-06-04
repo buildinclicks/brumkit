@@ -4,7 +4,7 @@ Thank you for your interest in contributing to BrumKit! This document provides g
 
 ## Code of Conduct
 
-Be respectful, inclusive, and constructive in all interactions.
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md). Be respectful, inclusive, and constructive in all interactions.
 
 ## Development Setup
 
@@ -38,8 +38,8 @@ pnpm install
 4. Set up environment variables:
 
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+cp .env.development.example .env.development
+# Edit .env.development with your configuration
 ```
 
 5. Generate Prisma Client:

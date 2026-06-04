@@ -7,6 +7,7 @@ node_modules
 coverage
 *.lcov
 .cursor
+.private-docs
 
 # Next.js
 .next/

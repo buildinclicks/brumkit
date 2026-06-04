@@ -14,7 +14,7 @@ vi.mock('next-intl/server', () => ({
         'You might want to check the URL or try one of these options:',
       go_home: 'Go to Home',
       go_back: 'Go Back',
-      browse_articles: 'Browse Articles',
+      go_to_dashboard: 'Go to Dashboard',
       contact_support: 'Contact Support',
     };
     return translations[key] || key;
@@ -70,12 +70,23 @@ describe('🔴 RED: NotFound Page', () => {
       expect(homeLink).toBeInTheDocument();
       expect(homeLink).toHaveAttribute('href', '/');
 
-      // Should have "Browse Articles" link
-      const articlesLink = screen.getByRole('link', {
-        name: /browse articles/i,
+      // Should have "Go to Dashboard" link instead of the broken /articles link
+      const dashboardLink = screen.getByRole('link', {
+        name: /go to dashboard/i,
       });
-      expect(articlesLink).toBeInTheDocument();
-      expect(articlesLink).toHaveAttribute('href', '/articles');
+      expect(dashboardLink).toBeInTheDocument();
+      expect(dashboardLink).toHaveAttribute('href', '/dashboard');
+    });
+
+    it('should not contain a link to /articles', async () => {
+      const NotFoundPage = await NotFound();
+      render(NotFoundPage);
+
+      const links = screen.getAllByRole('link');
+      const articlesLink = links.find(
+        (link) => link.getAttribute('href') === '/articles'
+      );
+      expect(articlesLink).toBeUndefined();
     });
 
     it('should render helpful suggestions', async () => {

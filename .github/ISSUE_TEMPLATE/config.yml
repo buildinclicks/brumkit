@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/buildinclicks/brumkit/security/advisories/new
+    about: Please report security vulnerabilities privately via GitHub Security Advisories.
+  - name: BrumKit Pro Support
+    url: https://buildinclicks.com
+    about: For Pro version support and billing questions, visit our website.
