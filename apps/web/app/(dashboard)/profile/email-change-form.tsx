@@ -64,12 +64,18 @@ export function EmailChangeForm({ currentEmail }: EmailChangeFormProps) {
   );
 
   const onSubmit = async (data: RequestEmailChangeInput) => {
-    await mutation.mutateAsync(data);
+    await mutation.mutateAsync(data).catch(() => {
+      // Errors are handled by mutation's onError callback
+    });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4"
+        noValidate
+      >
         {/* Current Email (Static) */}
         <div className="space-y-2">
           <Label>{tAuth('email_change.current_email_label')}</Label>

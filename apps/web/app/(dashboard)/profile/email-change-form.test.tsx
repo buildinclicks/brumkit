@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+import { requestEmailChangeSchema } from '@repo/validation';
 import { requestEmailChange } from '@/app/actions/email-change';
 import { renderWithProviders, screen, waitFor, userEvent } from '@/lib/test';
 
@@ -35,9 +36,9 @@ describe('EmailChangeForm', () => {
       expect(screen.getByText(/^Current Email$/i)).toBeInTheDocument();
       expect(screen.getByText('user@example.com')).toBeInTheDocument();
       expect(screen.getByLabelText(/new email/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/current password/i)).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /change email/i })
+        screen.getByRole('button', { name: /email change/i })
       ).toBeInTheDocument();
     });
 
@@ -58,7 +59,7 @@ describe('EmailChangeForm', () => {
         disableTheme: true,
       });
 
-      expect(screen.getByLabelText(/confirm password/i)).toHaveAttribute(
+      expect(screen.getByLabelText(/current password/i)).toHaveAttribute(
         'type',
         'password'
       );
@@ -81,7 +82,7 @@ describe('EmailChangeForm', () => {
       });
 
       expect(
-        screen.getByText(/verification email will be sent to the new address/i)
+        screen.getByText(/sent a verification link to your new email address/i)
       ).toBeInTheDocument();
     });
   });
@@ -92,7 +93,7 @@ describe('EmailChangeForm', () => {
         disableTheme: true,
       });
 
-      const passwordInput = screen.getByLabelText(/confirm password/i);
+      const passwordInput = screen.getByLabelText(/current password/i);
       const toggleButton = screen.getByRole('button', {
         name: /show password|hide password/i,
       });
@@ -114,7 +115,7 @@ describe('EmailChangeForm', () => {
       });
 
       const submitButton = screen.getByRole('button', {
-        name: /change email/i,
+        name: /email change/i,
       });
       await user.click(submitButton);
 
@@ -127,31 +128,21 @@ describe('EmailChangeForm', () => {
       });
     });
 
-    // TODO: This test is skipped because HTML5 email validation in the browser
-    // prevents the form from submitting when `type="email"`, which blocks our
-    // React Hook Form validation from running. In real usage, users would see
-    // the browser's native validation message. This is acceptable UX.
-    it.skip('should show error for invalid email format', async () => {
-      renderWithProviders(<EmailChangeForm currentEmail="user@example.com" />, {
-        disableTheme: true,
+    it('should reject email that is too short at the schema level', () => {
+      // HTML5 type="email" blocks form submission for short emails in real browsers,
+      // so we test the Zod schema directly instead of via UI interaction.
+      const result = requestEmailChangeSchema.safeParse({
+        newEmail: 'a@b',
+        password: 'Password123!',
       });
-
-      // Type a very short email that passes HTML5 but fails our .min(5) validation
-      await user.type(screen.getByLabelText(/new email/i), 'a@b');
-      await user.type(
-        screen.getByLabelText(/confirm password/i),
-        'Password123!'
-      );
-
-      const submitButton = screen.getByRole('button', {
-        name: /change email/i,
-      });
-      await user.click(submitButton);
-
-      await waitFor(() => {
-        // Should show "Email must be at least 5 characters" error
-        expect(screen.getByText(/email.*least.*5/i)).toBeInTheDocument();
-      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const emailIssue = result.error.issues.find((issue) =>
+          issue.path.includes('newEmail')
+        );
+        expect(emailIssue).toBeDefined();
+        expect(emailIssue?.message).toMatch(/at least 5|too short|invalid/i);
+      }
     });
 
     it('should show error for empty password', async () => {
@@ -162,7 +153,7 @@ describe('EmailChangeForm', () => {
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
 
       const submitButton = screen.getByRole('button', {
-        name: /change email/i,
+        name: /email change/i,
       });
       await user.click(submitButton);
 
@@ -177,10 +168,10 @@ describe('EmailChangeForm', () => {
       });
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
-      await user.type(screen.getByLabelText(/confirm password/i), 'weak');
+      await user.type(screen.getByLabelText(/current password/i), 'weak');
 
       const submitButton = screen.getByRole('button', {
-        name: /change email/i,
+        name: /email change/i,
       });
       await user.click(submitButton);
 
@@ -208,12 +199,12 @@ describe('EmailChangeForm', () => {
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'Password123!'
       );
 
       const submitButton = screen.getByRole('button', {
-        name: /change email/i,
+        name: /email change/i,
       });
       await user.click(submitButton);
 
@@ -235,17 +226,17 @@ describe('EmailChangeForm', () => {
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'Password123!'
       );
 
-      await user.click(screen.getByRole('button', { name: /change email/i }));
+      await user.click(screen.getByRole('button', { name: /email change/i }));
 
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith(
           'Verification Email Sent',
           expect.objectContaining({
-            description: expect.stringContaining('new@example.com'),
+            description: expect.stringContaining('verification link'),
           })
         );
       });
@@ -262,13 +253,13 @@ describe('EmailChangeForm', () => {
         /new email/i
       ) as HTMLInputElement;
       const passwordInput = screen.getByLabelText(
-        /confirm password/i
+        /current password/i
       ) as HTMLInputElement;
 
       await user.type(emailInput, 'new@example.com');
       await user.type(passwordInput, 'Password123!');
 
-      await user.click(screen.getByRole('button', { name: /change email/i }));
+      await user.click(screen.getByRole('button', { name: /email change/i }));
 
       await waitFor(() => {
         // Password should be cleared for security
@@ -291,11 +282,11 @@ describe('EmailChangeForm', () => {
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'WrongPassword123!'
       );
 
-      await user.click(screen.getByRole('button', { name: /change email/i }));
+      await user.click(screen.getByRole('button', { name: /email change/i }));
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
@@ -320,11 +311,11 @@ describe('EmailChangeForm', () => {
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'Password123!'
       );
 
-      await user.click(screen.getByRole('button', { name: /change email/i }));
+      await user.click(screen.getByRole('button', { name: /email change/i }));
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
@@ -352,11 +343,11 @@ describe('EmailChangeForm', () => {
         'existing@example.com'
       );
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'Password123!'
       );
 
-      await user.click(screen.getByRole('button', { name: /change email/i }));
+      await user.click(screen.getByRole('button', { name: /email change/i }));
 
       await waitFor(() => {
         expect(toast.error).toHaveBeenCalledWith(
@@ -376,7 +367,7 @@ describe('EmailChangeForm', () => {
       });
 
       expect(screen.getByLabelText(/new email/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/current password/i)).toBeInTheDocument();
     });
 
     it('should have aria-invalid on fields with errors', async () => {
@@ -384,7 +375,7 @@ describe('EmailChangeForm', () => {
         disableTheme: true,
       });
 
-      await user.click(screen.getByRole('button', { name: /change email/i }));
+      await user.click(screen.getByRole('button', { name: /email change/i }));
 
       await waitFor(() => {
         const emailInput = screen.getByLabelText(/new email/i);
@@ -398,7 +389,7 @@ describe('EmailChangeForm', () => {
       });
 
       expect(
-        screen.getByRole('button', { name: /change email/i })
+        screen.getByRole('button', { name: /email change/i })
       ).toBeInTheDocument();
     });
 
@@ -426,12 +417,12 @@ describe('EmailChangeForm', () => {
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'Password123!'
       );
 
       const submitButton = screen.getByRole('button', {
-        name: /change email/i,
+        name: /email change/i,
       });
       await user.click(submitButton);
 
@@ -450,16 +441,16 @@ describe('EmailChangeForm', () => {
 
       await user.type(screen.getByLabelText(/new email/i), 'new@example.com');
       await user.type(
-        screen.getByLabelText(/confirm password/i),
+        screen.getByLabelText(/current password/i),
         'Password123!'
       );
 
       const submitButton = screen.getByRole('button', {
-        name: /change email/i,
+        name: /email change/i,
       });
       await user.click(submitButton);
 
-      expect(screen.getByText(/sending/i)).toBeInTheDocument();
+      expect(screen.getByText(/requesting/i)).toBeInTheDocument();
     });
   });
 
@@ -469,7 +460,7 @@ describe('EmailChangeForm', () => {
         disableTheme: true,
       });
 
-      const passwordInput = screen.getByLabelText(/confirm password/i);
+      const passwordInput = screen.getByLabelText(/current password/i);
       expect(passwordInput).toHaveAttribute('type', 'password');
     });
 
@@ -478,7 +469,7 @@ describe('EmailChangeForm', () => {
         disableTheme: true,
       });
 
-      expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/current password/i)).toBeInTheDocument();
     });
   });
 });

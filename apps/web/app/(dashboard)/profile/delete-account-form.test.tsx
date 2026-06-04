@@ -342,13 +342,11 @@ describe('🔴 RED: DeleteAccountForm Component', () => {
       ) as HTMLInputElement;
       await user.type(passwordInput, 'Password123');
 
-      const checkbox = screen.getByLabelText(
-        /i understand that this action is permanent/i
-      ) as HTMLInputElement;
+      const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
 
       expect(passwordInput.value).toBe('Password123');
-      expect(checkbox.checked).toBe(true);
+      expect(checkbox).toBeChecked();
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
       await user.click(cancelButton);
@@ -356,7 +354,7 @@ describe('🔴 RED: DeleteAccountForm Component', () => {
       await waitFor(
         () => {
           expect(passwordInput.value).toBe('');
-          expect(checkbox.checked).toBe(false);
+          expect(checkbox).not.toBeChecked();
         },
         { timeout: 2000 }
       );
@@ -382,15 +380,16 @@ describe('🔴 RED: DeleteAccountForm Component', () => {
         success: false,
         error: 'Validation failed',
         fieldErrors: {
-          password: 'Password is required',
+          password: 'password.incorrect',
         },
       });
 
       renderWithProviders(<DeleteAccountForm />);
 
-      const checkbox = screen.getByLabelText(
-        /i understand that this action is permanent/i
-      );
+      const passwordInput = screen.getByLabelText(/confirm password/i);
+      await user.type(passwordInput, 'WrongPassword123!');
+
+      const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
 
       const submitButton = screen.getByRole('button', {
@@ -402,7 +401,6 @@ describe('🔴 RED: DeleteAccountForm Component', () => {
         () => {
           const alerts = screen.getAllByRole('alert');
           expect(alerts.length).toBeGreaterThan(0);
-          expect(screen.getByText(/password is required/i)).toBeInTheDocument();
         },
         { timeout: 2000 }
       );

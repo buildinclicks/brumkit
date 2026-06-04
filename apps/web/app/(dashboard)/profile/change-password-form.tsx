@@ -63,7 +63,9 @@ export function ChangePasswordForm() {
   });
 
   const onSubmit = async (data: ChangePasswordInput) => {
-    await mutation.mutateAsync(data);
+    await mutation.mutateAsync(data).catch(() => {
+      // Errors handled by mutation's onError callback
+    });
   };
 
   return (

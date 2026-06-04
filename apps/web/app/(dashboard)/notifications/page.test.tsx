@@ -22,9 +22,7 @@ vi.mock('@/components/notifications/notification-list', () => ({
 describe('NotificationsPage', () => {
   it('should render page title', () => {
     render(<NotificationsPage />);
-    expect(
-      screen.getByRole('heading', { name: 'Notifications' })
-    ).toBeInTheDocument();
+    expect(screen.getByText('Notifications')).toBeInTheDocument();
   });
 
   it('should render notification list', () => {

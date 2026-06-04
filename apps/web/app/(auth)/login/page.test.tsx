@@ -37,7 +37,7 @@ vi.mock('sonner', () => ({
   },
 }));
 
-// Mock router
+// Mock router and search params
 const mockPush = vi.fn();
 vi.mock('next/navigation', async () => {
   const actual = await vi.importActual('next/navigation');
@@ -49,6 +49,7 @@ vi.mock('next/navigation', async () => {
       prefetch: vi.fn(),
       back: vi.fn(),
     }),
+    useSearchParams: () => new URLSearchParams(),
   };
 });
 
@@ -72,7 +73,7 @@ describe('LoginPage - TDD', () => {
 
       // Form fields
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
 
       // Submit button
       expect(
@@ -118,7 +119,7 @@ describe('LoginPage - TDD', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
       });
     });
 
@@ -171,7 +172,7 @@ describe('LoginPage - TDD', () => {
 
       // Fill in form
       await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-      await user.type(screen.getByLabelText(/password/i), 'Password123!');
+      await user.type(screen.getByLabelText(/^password$/i), 'Password123!');
 
       // Submit
       await user.click(screen.getByRole('button', { name: /sign in/i }));
@@ -200,7 +201,7 @@ describe('LoginPage - TDD', () => {
 
       // Fill and submit form
       await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-      await user.type(screen.getByLabelText(/password/i), 'WrongPassword');
+      await user.type(screen.getByLabelText(/^password$/i), 'WrongPassword');
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
       // Verify error toast was shown
@@ -232,7 +233,7 @@ describe('LoginPage - TDD', () => {
       renderWithProviders(<LoginPage />, { disableTheme: true });
 
       expect(screen.getByLabelText(/email/i)).toBeDisabled();
-      expect(screen.getByLabelText(/password/i)).toBeDisabled();
+      expect(screen.getByLabelText(/^password$/i)).toBeDisabled();
     });
   });
 
@@ -241,7 +242,7 @@ describe('LoginPage - TDD', () => {
       renderWithProviders(<LoginPage />, { disableTheme: true });
 
       expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     });
 
     it('should display validation errors with role="alert"', async () => {
@@ -278,7 +279,7 @@ describe('LoginPage - TDD', () => {
       renderWithProviders(<LoginPage />, { disableTheme: true });
 
       await user.type(screen.getByLabelText(/email/i), 'test@example.com');
-      await user.type(screen.getByLabelText(/password/i), 'Password123!');
+      await user.type(screen.getByLabelText(/^password$/i), 'Password123!');
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
       await waitFor(() => {
@@ -298,7 +299,7 @@ describe('LoginPage - TDD', () => {
 
       const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
       const passwordInput = screen.getByLabelText(
-        /password/i
+        /^password$/i
       ) as HTMLInputElement;
 
       await user.type(emailInput, 'test@example.com');

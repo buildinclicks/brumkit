@@ -61,7 +61,7 @@ function LoginForm() {
       toast.success(t('login.success'));
     } catch (error: unknown) {
       toast.error(t('login.error_title'), {
-        description: t(getErrorMessage(error) as Parameters<typeof t>[0]),
+        description: getErrorMessage(error),
       });
     }
   };
@@ -76,7 +76,11 @@ function LoginForm() {
       </CardHeader>
       <CardContent className="space-y-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             <FormField
               control={form.control}
               name="email"

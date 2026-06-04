@@ -57,7 +57,7 @@ function ResetPasswordForm() {
     },
     onError: (error) => {
       toast.error(t('reset_password.error_toast_title'), {
-        description: t(getErrorMessage(error) as Parameters<typeof t>[0]),
+        description: getErrorMessage(error),
       });
     },
   });
@@ -85,7 +85,9 @@ function ResetPasswordForm() {
   }
 
   const onSubmit = async (data: ResetPasswordInput) => {
-    await resetMutation.mutateAsync(data);
+    await resetMutation.mutateAsync(data).catch(() => {
+      // Errors handled by mutation's onError callback
+    });
   };
 
   return (

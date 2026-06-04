@@ -56,13 +56,15 @@ export default function ForgotPasswordPage() {
     },
     onError: (error) => {
       toast.error(t('forgot_password.error_toast_title'), {
-        description: t(getErrorMessage(error) as Parameters<typeof t>[0]),
+        description: getErrorMessage(error),
       });
     },
   });
 
   const onSubmit = async (data: ResetPasswordRequestInput) => {
-    await mutation.mutateAsync(data);
+    await mutation.mutateAsync(data).catch(() => {
+      // Errors handled by mutation's onError callback
+    });
   };
 
   if (isSuccess) {
@@ -100,7 +102,11 @@ export default function ForgotPasswordPage() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             <FormField
               control={form.control}
               name="email"

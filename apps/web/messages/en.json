@@ -211,6 +211,7 @@
       "incorrect_password": "Incorrect password",
       "rate_limit_error": "Too many deletion attempts. Please try again later.",
       "confirmation_modal_title": "Are you absolutely sure?",
+      "grace_period_title": "30-Day Grace Period",
       "confirmation_modal_message": "Please type CONFIRM to delete your account",
       "confirmation_input_placeholder": "Type CONFIRM",
       "grace_period_info": "You have 30 days to cancel this action by logging in again."
@@ -404,7 +405,8 @@
         "image_label": "Profile Image URL",
         "image_placeholder": "https://example.com/avatar.jpg",
         "submit_button": "Save Changes",
-        "submitting": "Saving..."
+        "submitting": "Saving...",
+        "success_toast": "Profile updated successfully!"
       },
       "change_email": {
         "title": "Change Email",

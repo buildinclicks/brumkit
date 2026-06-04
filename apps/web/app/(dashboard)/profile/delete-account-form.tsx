@@ -89,7 +89,9 @@ export function DeleteAccountForm() {
       return;
     }
 
-    await mutation.mutateAsync(data);
+    await mutation.mutateAsync(data).catch(() => {
+      // Errors handled by mutation's onError callback
+    });
   };
 
   const handleCancel = () => {
@@ -167,6 +169,9 @@ export function DeleteAccountForm() {
             <div className="bg-muted/50 dark:bg-muted/20 border border-border/50 rounded-md p-4">
               <p className="text-sm font-medium mb-2">
                 {tAuth('delete_account.confirmation_modal_title')}
+              </p>
+              <p className="text-sm font-medium mb-1">
+                {tAuth('delete_account.grace_period_title')}
               </p>
               <p className="text-sm text-muted-foreground">
                 {tAuth('delete_account.grace_period_info')}

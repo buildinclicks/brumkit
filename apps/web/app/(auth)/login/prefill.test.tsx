@@ -44,7 +44,7 @@ describe('LoginPage Prefilling', () => {
 
     await waitFor(() => {
       const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
-      const passwordInput = screen.getByPlaceholderText(
+      const passwordInput = screen.getByLabelText(
         /^password$/i
       ) as HTMLInputElement;
 
@@ -60,7 +60,7 @@ describe('LoginPage Prefilling', () => {
 
     await waitFor(() => {
       const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
-      const passwordInput = screen.getByPlaceholderText(
+      const passwordInput = screen.getByLabelText(
         /^password$/i
       ) as HTMLInputElement;
 

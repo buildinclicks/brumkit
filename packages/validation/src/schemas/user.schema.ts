@@ -39,14 +39,10 @@ export const updateUserProfileSchema = z.object({
   bio: z.string().max(500, ValidationMessages.USER_BIO_TOO_LONG).optional(),
   image: z
     .string()
-    .refine(
-      (val) => !val || val === '' || z.string().url().safeParse(val).success,
-      {
-        message: ValidationMessages.USER_IMAGE_INVALID,
-      }
-    )
     .optional()
-    .or(z.literal('')),
+    .refine((val) => !val || z.string().url().safeParse(val).success, {
+      message: ValidationMessages.USER_IMAGE_INVALID,
+    }),
 });
 
 export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;

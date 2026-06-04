@@ -62,7 +62,9 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterInput) => {
-    await registerMutation.mutateAsync(data);
+    await registerMutation.mutateAsync(data).catch(() => {
+      // Errors handled by mutation's onError callback
+    });
   };
 
   return (
@@ -75,7 +77,11 @@ export default function RegisterPage() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             <FormField
               control={form.control}
               name="name"

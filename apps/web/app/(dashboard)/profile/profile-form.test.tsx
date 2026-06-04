@@ -144,10 +144,7 @@ describe('🔴 RED: ProfileForm Component', () => {
       expect(vi.mocked(updateUserProfile)).not.toHaveBeenCalled();
     });
 
-    // TODO: Fix image URL validation - Zod .optional() + .refine() chain not working as expected
-    // The validation logic should reject "not-a-url" but accepts it
-    // Need to investigate Zod schema structure for optional URL fields
-    it.skip('should show validation error for invalid image URL', async () => {
+    it('should show validation error for invalid image URL', async () => {
       const user = userEvent.setup();
       renderWithProviders(<ProfileForm user={mockUser} />);
 

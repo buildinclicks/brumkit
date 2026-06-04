@@ -51,7 +51,7 @@ vi.mock('@repo/email', () => ({
   sendAccountDeletionNotification: vi.fn(),
 }));
 
-import { auth } from '@repo/auth';
+import { auth, hashPassword } from '@repo/auth';
 import {
   getTestClient,
   cleanDatabase,
@@ -508,9 +508,7 @@ describe('Account Deletion Server Action - Integration Tests', () => {
           email: 'noname@example.com',
           username: 'noname',
           name: null,
-          password: await import('bcryptjs').then((bcrypt) =>
-            bcrypt.hash('Password123!', 10)
-          ),
+          password: await hashPassword('Password123!'),
         },
       });
 

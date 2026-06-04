@@ -51,6 +51,7 @@ export function NotificationItem({
                 <Badge
                   variant="default"
                   className="rounded-full h-2 w-2 p-0 border-0"
+                  data-testid="unread-indicator"
                 />
               )}
               {notification.title}

@@ -81,4 +81,57 @@ describe('NotificationList', () => {
     });
     expect(markAllButton).toBeInTheDocument();
   });
+
+  it('should render error state when getNotifications fails', async () => {
+    const { getNotifications } = await import('@/app/actions/notification');
+    vi.mocked(getNotifications).mockResolvedValue({
+      success: false,
+      error: 'Failed to load notifications',
+    });
+
+    renderWithProviders(<NotificationList />, { disableTheme: true });
+
+    const errorText = await screen.findByText(/failed to load notifications/i);
+    expect(errorText).toBeInTheDocument();
+  });
+
+  it('should mark notification as read when mark-as-read button is clicked', async () => {
+    const { getNotifications, markAsRead } =
+      await import('@/app/actions/notification');
+    vi.mocked(getNotifications).mockResolvedValue({
+      success: true,
+      data: mockNotifications,
+    });
+    vi.mocked(markAsRead).mockResolvedValue({ success: true });
+
+    const user = (await import('@testing-library/user-event')).default.setup();
+    renderWithProviders(<NotificationList />, { disableTheme: true });
+
+    const markAsReadButtons = await screen.findAllByRole('button', {
+      name: /mark as read/i,
+    });
+    await user.click(markAsReadButtons[0]!);
+
+    expect(markAsRead).toHaveBeenCalledWith('1');
+  });
+
+  it('should mark all notifications as read when mark-all button is clicked', async () => {
+    const { getNotifications, markAllAsRead } =
+      await import('@/app/actions/notification');
+    vi.mocked(getNotifications).mockResolvedValue({
+      success: true,
+      data: mockNotifications,
+    });
+    vi.mocked(markAllAsRead).mockResolvedValue({ success: true });
+
+    const user = (await import('@testing-library/user-event')).default.setup();
+    renderWithProviders(<NotificationList />, { disableTheme: true });
+
+    const markAllButton = await screen.findByRole('button', {
+      name: /mark all as read/i,
+    });
+    await user.click(markAllButton);
+
+    expect(markAllAsRead).toHaveBeenCalled();
+  });
 });

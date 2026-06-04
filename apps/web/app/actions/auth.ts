@@ -65,7 +65,7 @@ export async function registerUser(
     if (!emailRateLimit.success) {
       return {
         success: false,
-        error: 'forgot_password.rate_limit_error',
+        error: `Too many registration attempts. Please try again in ${formatRetryAfter(emailRateLimit.retryAfter!)}.`,
       };
     }
 
@@ -80,7 +80,7 @@ export async function registerUser(
     if (!ipRateLimit.success) {
       return {
         success: false,
-        error: 'forgot_password.rate_limit_error',
+        error: `Too many registration attempts. Please try again in ${formatRetryAfter(ipRateLimit.retryAfter!)}.`,
       };
     }
 
@@ -193,7 +193,7 @@ export async function loginUser(data: LoginInput): Promise<ActionResult> {
     if (!emailRateLimit.success) {
       return {
         success: false,
-        error: 'forgot_password.rate_limit_error',
+        error: `Too many login attempts. Please try again in ${formatRetryAfter(emailRateLimit.retryAfter!)}.`,
       };
     }
 
@@ -208,7 +208,7 @@ export async function loginUser(data: LoginInput): Promise<ActionResult> {
     if (!ipRateLimit.success) {
       return {
         success: false,
-        error: 'forgot_password.rate_limit_error',
+        error: `Too many login attempts. Please try again in ${formatRetryAfter(ipRateLimit.retryAfter!)}.`,
       };
     }
 

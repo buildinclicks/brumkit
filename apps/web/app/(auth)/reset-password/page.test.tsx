@@ -245,7 +245,7 @@ describe('GREEN: ResetPasswordPage (TDD)', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeInTheDocument();
+        expect(screen.getAllByRole('alert').length).toBeGreaterThan(0);
       });
     });
 

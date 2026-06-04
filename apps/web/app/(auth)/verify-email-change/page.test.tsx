@@ -69,7 +69,7 @@ describe('VerifyEmailChangePage', () => {
       renderWithProviders(<VerifyEmailChangePage />, { disableTheme: true });
 
       expect(
-        screen.getByRole('heading', { name: /verifying email change/i })
+        screen.getByRole('heading', { name: /verifying your new email/i })
       ).toBeInTheDocument();
     });
 
@@ -80,7 +80,9 @@ describe('VerifyEmailChangePage', () => {
 
       renderWithProviders(<VerifyEmailChangePage />, { disableTheme: true });
 
-      expect(screen.getByText(/verifying/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /verifying/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -103,7 +105,9 @@ describe('VerifyEmailChangePage', () => {
       renderWithProviders(<VerifyEmailChangePage />, { disableTheme: true });
 
       await waitFor(() => {
-        expect(screen.getByText(/no verification token/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/invalid or expired verification link/i)
+        ).toBeInTheDocument();
       });
     });
 

@@ -53,7 +53,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const mutation = useServerActionForm(updateUserProfile, {
     setError: form.setError,
     onSuccess: () => {
-      toast.success(t('submit_button') + ' Successful'); // Generic success toast
+      toast.success(t('success_toast'));
     },
     onError: (error) => {
       toast.error('Update Failed', {
@@ -63,12 +63,18 @@ export function ProfileForm({ user }: ProfileFormProps) {
   });
 
   const onSubmit = async (data: UpdateUserProfileInput) => {
-    await mutation.mutateAsync(data);
+    await mutation.mutateAsync(data).catch(() => {
+      // Errors handled by mutation's onError callback
+    });
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4"
+        noValidate
+      >
         <FormField
           control={form.control}
           name="name"

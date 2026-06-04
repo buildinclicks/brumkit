@@ -89,4 +89,100 @@ describe('NotificationItem', () => {
       screen.queryByRole('button', { name: /mark as read/i })
     ).not.toBeInTheDocument();
   });
+
+  it('should show "just now" for very recent notifications', () => {
+    const recentNotification = {
+      ...mockNotification,
+      createdAt: new Date(Date.now() - 10_000), // 10 seconds ago
+    };
+
+    renderWithProviders(
+      <NotificationItem
+        notification={recentNotification}
+        onMarkAsRead={() => {}}
+      />,
+      { disableTheme: true }
+    );
+
+    expect(screen.getByText('just now')).toBeInTheDocument();
+  });
+
+  it('should show minutes ago for notifications 1-59 minutes old', () => {
+    const minutesAgoNotification = {
+      ...mockNotification,
+      createdAt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+    };
+
+    renderWithProviders(
+      <NotificationItem
+        notification={minutesAgoNotification}
+        onMarkAsRead={() => {}}
+      />,
+      { disableTheme: true }
+    );
+
+    expect(screen.getByText(/minutes ago/i)).toBeInTheDocument();
+  });
+
+  it('should show hours ago for notifications 1-23 hours old', () => {
+    const hoursAgoNotification = {
+      ...mockNotification,
+      createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
+    };
+
+    renderWithProviders(
+      <NotificationItem
+        notification={hoursAgoNotification}
+        onMarkAsRead={() => {}}
+      />,
+      { disableTheme: true }
+    );
+
+    expect(screen.getByText(/hours ago/i)).toBeInTheDocument();
+  });
+
+  it('should show days ago for notifications older than 24 hours', () => {
+    const daysAgoNotification = {
+      ...mockNotification,
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+    };
+
+    renderWithProviders(
+      <NotificationItem
+        notification={daysAgoNotification}
+        onMarkAsRead={() => {}}
+      />,
+      { disableTheme: true }
+    );
+
+    expect(screen.getByText(/days ago/i)).toBeInTheDocument();
+  });
+
+  it('should render a View link when notification has a link', () => {
+    renderWithProviders(
+      <NotificationItem
+        notification={mockNotification}
+        onMarkAsRead={() => {}}
+      />,
+      { disableTheme: true }
+    );
+
+    expect(screen.getByRole('link', { name: /view/i })).toBeInTheDocument();
+  });
+
+  it('should not render a View link when notification has no link', () => {
+    const noLinkNotification = { ...mockNotification, link: null };
+
+    renderWithProviders(
+      <NotificationItem
+        notification={noLinkNotification}
+        onMarkAsRead={() => {}}
+      />,
+      { disableTheme: true }
+    );
+
+    expect(
+      screen.queryByRole('link', { name: /view/i })
+    ).not.toBeInTheDocument();
+  });
 });
