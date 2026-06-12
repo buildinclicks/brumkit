@@ -38,38 +38,17 @@
 
 <!-- Describe any manual testing performed -->
 
-## Checklist
+## BrumKit Contribution Standards
 
-<!-- Ensure all items are checked before submitting -->
-
-### Code Quality
-
-- [ ] My code follows the project's TDD approach (Red-Green-Refactor)
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] My changes generate no new ESLint warnings or errors
-- [ ] My changes generate no TypeScript errors
-- [ ] I have run `pnpm lint` and fixed all issues
-- [ ] I have run `pnpm type-check` and it passes
-- [ ] I have run `pnpm format` to format my code
-
-### Testing
-
-- [ ] I have run `pnpm test` and all tests pass
-- [ ] I have run `pnpm test:coverage` and coverage is ≥80%
-- [ ] I have added/updated tests for my changes
-
-### Documentation
-
-- [ ] I have updated the documentation accordingly
-- [ ] I have updated the CHANGELOG.md if applicable
-- [ ] My commit messages follow the conventional commit format
-
-### Dependencies
-
-- [ ] I have updated dependencies only when necessary
-- [ ] I have verified that new dependencies are from trusted sources
-- [ ] I have not committed any `.env` files or secrets
+- [ ] I followed the TDD-first approach (failing test → implementation → refactor)
+- [ ] All cursor rules in `.cursor/rules/` are followed
+- [ ] `pnpm lint` passes with zero errors
+- [ ] `pnpm type-check` passes with zero errors
+- [ ] `pnpm test` passes; coverage is at or above 80%
+- [ ] No hardcoded strings — i18n keys used via `useTranslations()`/`getTranslations()`
+- [ ] `ActionResult` pattern used for all server actions
+- [ ] A changeset file is included (run `pnpm changeset`)
+- [ ] (For UI changes) Screenshots or screen recording attached
 
 ## Related Issues
 

@@ -2,7 +2,7 @@
 
 # 🚀 BrumKit - Open Source Edition (Lite)
 
-**Version 0.1.0** | A production-ready Next.js 15 starter kit with authentication, authorization, and essential features.
+**Version 0.1.0** (pre-1.0.0 stable) | A production-ready Next.js 15 starter kit with authentication, authorization, and essential features. See [ROADMAP.md](ROADMAP.md) for the path to v1.0.0.
 
 Start building your SaaS faster with our Next.js 15 + Prisma + Tailwind CSS v4 starter kit.
 
@@ -36,7 +36,8 @@ Start building your SaaS faster with our Next.js 15 + Prisma + Tailwind CSS v4 s
 - 👤 **User Profiles**: Profile management, avatar uploads, and account settings.
 - 🔔 **Notifications**: Real-time ready notification system with read/unread tracking.
 - 🚀 **Rate Limiting**: Redis-based protection for sensitive routes.
-- 🐳 **Docker-Ready**: Local containerized development environment.
+- 🐳 **Docker-Ready**: Local infrastructure and production self-hosting via Docker.
+- 🔄 **Release automation**: Changesets versioning with GitHub Actions release pipeline.
 
 ---
 
@@ -203,11 +204,69 @@ See the [Self-Hosting with Docker guide](docs/deployment/self-hosting-docker.md)
 
 ---
 
+## 🖼️ Screenshots
+
+### Login Page
+
+![Login Page](apps/web/public/images/brumkit_banner.png)
+
+> Full screenshots of the auth flow, dashboard, and profile pages will be added before the v1.0.0 release.
+
+---
+
+## ⚡ Quick Start
+
+Clone and run BrumKit in under 5 minutes:
+
+```bash
+git clone https://github.com/buildinclicks/brumkit.git
+cd brumkit
+pnpm install
+cp .env.development.example .env.development
+cp .env.development.example packages/database/.env
+docker compose --env-file .env.development up -d
+pnpm --filter @repo/database db:migrate
+pnpm --filter @repo/database db:seed
+pnpm dev
+```
+
+Open [http://localhost:4000](http://localhost:4000) in your browser.
+
+---
+
+## 📖 Documentation
+
+| Guide                                                                           | Description                              |
+| ------------------------------------------------------------------------------- | ---------------------------------------- |
+| [Installation & setup](docs/guide/v1.0.1-pre-release/installation-and-setup.md) | Full manual and Docker setup walkthrough |
+| [Self-hosting with Docker](docs/deployment/self-hosting-docker.md)              | Production Docker deployment             |
+| [Vercel deployment](docs/deployment/vercel-deployment-guide.md)                 | Managed hosting on Vercel                |
+| [ROADMAP.md](ROADMAP.md)                                                        | Milestone progress and v1.0.0 plan       |
+| [CHANGELOG.md](CHANGELOG.md)                                                    | Version history                          |
+
+---
+
 ## 🤝 Contributing & Support
 
-- **Contributing**: Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our TDD flow.
-- **Issues**: Report bugs in [GitHub Issues](https://github.com/buildinclicks/brumkit/issues).
+- **Contributing**: Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our TDD workflow, changeset process, and coding standards.
+- **Roadmap**: See [ROADMAP.md](ROADMAP.md) for release milestones and what's planned next.
+- **Issues**: Report bugs via [GitHub Issues](https://github.com/buildinclicks/brumkit/issues).
+- **Discussions**: Join the conversation in [GitHub Discussions](https://github.com/buildinclicks/brumkit/discussions).
 - **Documentation**: Explore the [docs/](docs/) folder for detailed guides.
+
+---
+
+## 🔒 Security
+
+To report a security vulnerability, please use [GitHub Security Advisories](https://github.com/buildinclicks/brumkit/security/advisories/new) rather than a public issue. See [SECURITY.md](SECURITY.md) for our full disclosure policy and response SLA.
+
+---
+
+## 🌐 Community
+
+- [GitHub Discussions](https://github.com/buildinclicks/brumkit/discussions) — questions, ideas, and announcements
+- [GitHub Issues](https://github.com/buildinclicks/brumkit/issues) — bug reports and feature requests
+- [Security Advisories](https://github.com/buildinclicks/brumkit/security/advisories/new) — private vulnerability reports
 
 ---
 

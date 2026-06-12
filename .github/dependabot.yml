@@ -1,0 +1,17 @@
+version: 2
+
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    groups:
+      production-dependencies:
+        dependency-type: 'production'
+      development-dependencies:
+        dependency-type: 'development'
+    assignees:
+      - 'buildinclicks'
+    open-pull-requests-limit: 10
+    versioning-strategy: increase

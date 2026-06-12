@@ -1,8 +1,9 @@
 # BrumKit - Project Status & Developer Guide (Open Source Edition)
 
-> **Version:** 0.1.0 - Open Source Edition  
-> **Last Updated:** February 2026  
-> **Purpose:** A comprehensive guide for developers joining the BrumKit open-source project
+> **Version:** 0.1.0 (pre-1.0.0 stable)  
+> **Last Updated:** June 2026  
+> **Purpose:** A comprehensive guide for developers joining the BrumKit open-source project  
+> **Roadmap:** See [ROADMAP.md](../ROADMAP.md) for v1.0.0 milestone progress
 
 ---
 
@@ -101,12 +102,17 @@ BrumKit is a **production-ready Next.js 15 starter kit** designed for building m
 
 #### Infrastructure
 
-- [x] Docker Compose for local services
+- [x] Docker Compose for local services (Postgres, Redis, Mailhog)
+- [x] Production multi-stage Dockerfile (`apps/web/Dockerfile`)
+- [x] Full-stack compose (`docker-compose.full.yml`) for self-hosted deployment
+- [x] Docker build validation in CI
 - [x] Rate limiting package with Redis
 - [x] Validation schemas with Zod
 - [x] Shared configuration packages (ESLint, TypeScript, Tailwind, Vitest)
 - [x] Vercel deployment configuration
 - [x] Cron job for account cleanup
+- [x] Changesets release pipeline and GitHub Actions release workflow
+- [x] Dependabot and dependency-review security scanning
 
 ---
 
@@ -604,26 +610,28 @@ Create `.cursor/rules/development.md`:
 
 ```bash
 # 1. Clone the repository
-git clone <repo-url>
+git clone https://github.com/buildinclicks/brumkit.git
 cd brumkit
 
 # 2. Install dependencies
 pnpm install
 
-# 3. Start Docker services
-docker compose -f docker/docker-compose.yml up -d
+# 3. Set up environment
+cp .env.development.example .env.development
+cp .env.development.example packages/database/.env
 
-# 4. Setup environment
-cp env.example .env.local
-# Edit .env.local with your values
+# 4. Start Docker infrastructure
+docker compose --env-file .env.development up -d
 
 # 5. Setup database
-pnpm --filter @repo/database db:push
+pnpm --filter @repo/database db:migrate
 pnpm --filter @repo/database db:seed
 
 # 6. Start development
 pnpm dev
 ```
+
+The app runs at [http://localhost:4000](http://localhost:4000). See [installation guide](./guide/v1.0.1-pre-release/installation-and-setup.md) for full details.
 
 ### Available Scripts
 
@@ -737,42 +745,38 @@ git push --no-verify
 ### Services Overview
 
 ```yaml
-# docker/docker-compose.yml
+# docker-compose.yml (repository root)
 
 services:
   postgres: # Database (REQUIRED)
     image: postgres:16-alpine
-    ports: ['5432:5432']
 
   redis: # Rate limiting (RECOMMENDED)
     image: redis:7-alpine
-    ports: ['6379:6379']
 
   mailhog: # Email testing (RECOMMENDED)
     image: mailhog/mailhog:latest
-    ports: ['1025:1025', '8025:8025']
 ```
+
+For production self-hosting, use `docker-compose.full.yml` — see [self-hosting guide](./deployment/self-hosting-docker.md).
 
 ### Quick Start Commands
 
 ```bash
-# Start all services
-docker compose -f docker/docker-compose.yml up -d
-
-# Start specific services
-docker compose -f docker/docker-compose.yml up -d postgres redis mailhog
+# Start infrastructure
+docker compose --env-file .env.development up -d
 
 # Check status
-docker compose -f docker/docker-compose.yml ps
+docker compose --env-file .env.development ps
 
 # View logs
-docker compose -f docker/docker-compose.yml logs -f
+docker compose --env-file .env.development logs -f
 
 # Stop services
-docker compose -f docker/docker-compose.yml stop
+docker compose --env-file .env.development stop
 
 # Reset all data
-docker compose -f docker/docker-compose.yml down -v
+docker compose --env-file .env.development down -v
 ```
 
 ### Service URLs
@@ -782,7 +786,7 @@ docker compose -f docker/docker-compose.yml down -v
 | PostgreSQL  | `localhost:5432`        | Database         |
 | Redis       | `localhost:6379`        | Rate limiting    |
 | Mailhog UI  | `http://localhost:8025` | View test emails |
-| Next.js App | `http://localhost:3000` | Application      |
+| Next.js App | `http://localhost:4000` | Application      |
 
 ### Environment Detection
 
@@ -937,9 +941,15 @@ See `docs/deployment/README.md` for comprehensive deployment guide.
 
 ## In-Progress Features
 
-### Currently Being Developed
+### v1.0.0 Release Track
 
-This is the stable open-source release. Future enhancements will be community-driven.
+See [ROADMAP.md](../ROADMAP.md) for full milestone status. Summary:
+
+| Milestone                                                    | Status      |
+| ------------------------------------------------------------ | ----------- |
+| M1–M5 (hygiene, deps, Docker, coverage, release engineering) | ✅ Complete |
+| M6 (v1.0.0 cut)                                              | 🔄 Next     |
+| M7 (post-1.0 major upgrades)                                 | ⏳ Deferred |
 
 | Feature                    | Status  | Notes               |
 | -------------------------- | ------- | ------------------- |
@@ -964,6 +974,8 @@ This is the stable open-source release. Future enhancements will be community-dr
 ---
 
 ## Future Roadmap
+
+For the public roadmap and post-1.0.0 plans, see [ROADMAP.md](../ROADMAP.md).
 
 This open-source edition is feature-complete for its intended scope. Community contributions are welcome for:
 
@@ -1027,7 +1039,7 @@ For local development after seeding:
 ```bash
 # Development
 pnpm dev                                    # Start dev server
-docker compose -f docker/docker-compose.yml up -d  # Start services
+docker compose --env-file .env.development up -d  # Start services
 
 # Database
 pnpm --filter @repo/database db:studio     # Open Prisma Studio
@@ -1042,14 +1054,16 @@ pnpm lint && pnpm format                   # Fix all issues
 
 ### Important Files
 
-| File                                     | Purpose                 |
-| ---------------------------------------- | ----------------------- |
-| `turbo.json`                             | Turborepo configuration |
-| `pnpm-workspace.yaml`                    | Workspace packages      |
-| `docker/docker-compose.yml`              | Local services          |
-| `packages/database/prisma/schema.prisma` | Database schema         |
-| `apps/web/middleware.ts`                 | Route protection        |
-| `apps/web/app/actions/auth.ts`           | Auth server actions     |
+| File                                     | Purpose                       |
+| ---------------------------------------- | ----------------------------- |
+| `turbo.json`                             | Turborepo configuration       |
+| `pnpm-workspace.yaml`                    | Workspace packages            |
+| `docker-compose.yml`                     | Local infrastructure services |
+| `docker-compose.full.yml`                | Full-stack production compose |
+| `apps/web/Dockerfile`                    | Production app image          |
+| `packages/database/prisma/schema.prisma` | Database schema               |
+| `apps/web/middleware.ts`                 | Route protection              |
+| `apps/web/app/actions/auth.ts`           | Auth server actions           |
 
 ### Need Help?
 

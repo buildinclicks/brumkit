@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Changesets-based versioning with linked `@repo/*` packages and `web` app
+- GitHub Actions release workflow (Version Packages PR, tags, GitHub Releases)
+- Dependabot weekly dependency updates and dependency-review CI gate
+- Comprehensive test suite expansion: middleware, hooks, API routes, UI components, and validation schemas
+- CI coverage enforcement at 80% threshold
+- [Installation & setup guide](docs/guide/v1.0.1-pre-release/installation-and-setup.md) for manual and Docker workflows
+- [ROADMAP.md](ROADMAP.md) tracking progress toward v1.0.0
+
+### Changed
+
+- Updated `CONTRIBUTING.md` with changeset workflow, TDD standards, and Codecov setup
+- Improved PR template with BrumKit Contribution Standards checklist
+- Expanded `apps/web` Vitest coverage to include `app/actions/**` and `app/api/**`
+- README: documentation index, deployment links, and pre-1.0.0 status note
+
+### Fixed
+
+- Database port configuration in `docker-compose.yml` for local development
+- Removed skipped profile form tests; replaced HTML5 email validation tests with Zod schema tests
+
 ## [0.1.0] - 2026-02-17
 
 ### Added

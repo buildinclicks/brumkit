@@ -1,6 +1,6 @@
 # Deployment Documentation
 
-Complete documentation for deploying React Masters to production on Vercel.
+Complete documentation for deploying BrumKit to production on Vercel or via Docker.
 
 ---
 

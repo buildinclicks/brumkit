@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "changelog": "@changesets/changelog-github",
+  "commit": false,
+  "linked": [
+    [
+      "@repo/auth",
+      "@repo/database",
+      "@repo/email",
+      "@repo/rate-limit",
+      "@repo/types",
+      "@repo/ui",
+      "@repo/utils",
+      "@repo/validation",
+      "web"
+    ]
+  ],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

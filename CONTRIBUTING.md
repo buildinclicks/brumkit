@@ -15,77 +15,163 @@ Before you begin, ensure you have the following installed:
 - **Node.js**: >= 20.19.0
 - **pnpm**: >= 10.0.0
 - **Git**: Latest version
-- **PostgreSQL**: For database
-- **Redis**: For rate limiting (Docker recommended)
+- **Docker**: For running infrastructure (PostgreSQL, Redis)
 
 ### Setup Instructions
 
-1. Fork the repository
-
-2. Clone your fork:
+1. Fork the repository and clone your fork:
 
 ```bash
 git clone https://github.com/<your-username>/brumkit.git
 cd brumkit
 ```
 
-3. Install dependencies:
+2. Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-4. Set up environment variables:
+3. Set up environment variables:
 
 ```bash
 cp .env.development.example .env.development
+# Also copy for the database package:
+cp .env.development.example packages/database/.env
 # Edit .env.development with your configuration
 ```
 
-5. Generate Prisma Client:
+4. Start infrastructure (Docker):
 
 ```bash
-cd packages/database && pnpm db:generate
+docker compose --env-file .env.development up -d
 ```
 
-6. Start development server:
+5. Run migrations and seed the database:
 
 ```bash
-pnpm dev:web
+pnpm --filter @repo/database db:migrate
+pnpm --filter @repo/database db:seed
 ```
 
-4. Create a feature branch:
+6. Generate Prisma client:
+
+```bash
+pnpm --filter @repo/database db:generate
+```
+
+7. Start the development server:
+
+```bash
+pnpm dev
+```
+
+The application will be available at [http://localhost:4000](http://localhost:4000).
+
+8. Create a feature branch:
 
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-## Development Workflow
+## TDD Workflow
 
-### 1. Follow TDD (Test-Driven Development)
+BrumKit strictly follows Test-Driven Development. **Never write implementation code before a failing test exists for it.**
 
-We strictly follow the TDD cycle:
+### Red-Green-Refactor Cycle
 
-1. **Red**: Write a failing test first
-2. **Green**: Write minimal code to make the test pass
-3. **Refactor**: Clean up code while keeping tests green
+1. **RED** — Write a failing test that describes the expected behaviour
+2. **GREEN** — Write the minimal code that makes the test pass
+3. **REFACTOR** — Clean up code and tests while keeping them green
 
-### 2. Code Style
+### Test Structure (Arrange-Act-Assert)
 
-We use ESLint 10 and Prettier for code formatting:
+```tsx
+it('should create user', async () => {
+  // ARRANGE
+  const userData = await createUserWithPasswordFixture();
+  // ACT
+  const user = await db.user.create({ data: userData });
+  // ASSERT
+  expect(user.email).toBe(userData.email);
+});
+```
 
-- **ESLint 10**: Flat config (eslint.config.js)
-- **Prettier**: Automatic code formatting
-- **TypeScript**: Strict mode enabled
-- Single quotes
-- 2-space indentation
-- Semicolons required
+### Naming Convention
+
+Test names must use the `should` prefix:
+
+```tsx
+describe('LoginPage', () => {
+  describe('Rendering', () => {
+    it('should render form with all fields');
+  });
+  describe('Validation', () => {
+    it('should show error for invalid email');
+  });
+  describe('Submission', () => {
+    it('should redirect on success');
+    it('should show error toast on failure');
+  });
+});
+```
+
+### Coverage Requirement
+
+**Minimum 80%** — enforced in CI via `pnpm test:coverage`. New features must maintain or improve this threshold.
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Watch mode
+pnpm test:watch
+
+# With coverage report
+pnpm test:coverage
+
+# Specific package
+pnpm --filter @repo/auth test
+
+# Specific file
+pnpm --filter web test -- login
+```
+
+## Coding Standards
+
+This project follows specific coding patterns defined in `.cursor/rules/`. Key rules:
+
+- [`00-project-overview.mdc`](.cursor/rules/00-project-overview.mdc) — workspace layout, import aliases
+- [`tdd-testing.mdc`](.cursor/rules/tdd-testing.mdc) — TDD approach, test structure, coverage requirements
+- [`code-consistency.mdc`](.cursor/rules/code-consistency.mdc) — TypeScript patterns, `ActionResult`, Zod schemas
+- [`react-nextjs.mdc`](.cursor/rules/react-nextjs.mdc) — App Router patterns, Server Actions
+- [`forms-validation-i18n.mdc`](.cursor/rules/forms-validation-i18n.mdc) — React Hook Form, i18n
+- [`shadcn-ui-theming.mdc`](.cursor/rules/shadcn-ui-theming.mdc) — component usage, theming
+- [`tailwindcss.mdc`](.cursor/rules/tailwindcss.mdc) — Tailwind v4 patterns
+
+Key patterns at a glance:
+
+- Use Server Actions for mutations (not REST APIs)
+- Use `ActionResult<T>` for all server action return types
+- Use React Hook Form + Zod for form validation
+- Use `<FieldError>` component for validation errors
+- Use Tailwind CSS v4 (CSS-first configuration)
+- Use `useTranslations()`/`getTranslations()` — never hardcode user-facing strings
+- Import from `@repo/*` aliases — never use relative paths across packages
+
+### Code Style
+
+- **Prettier** auto-formats on save (single quotes, configured in `.prettierrc`)
+- **ESLint** flat config (`eslint.config.js`) enforces code quality
 - Run `pnpm lint` to check for issues
-- Run `pnpm format` to auto-format code
+- Run `pnpm format` to auto-format all files
+- Run `pnpm format:check` to verify formatting without writing
 
-### 3. Commit Messages
+### Commit Messages
 
-Use conventional commit format:
+Use [Conventional Commits](https://www.conventionalcommits.org/) format:
 
 ```
 feat: add notification badge to header
@@ -93,64 +179,42 @@ fix: resolve login redirect issue
 docs: update README installation steps
 test: add tests for notification actions
 refactor: simplify permission logic
+chore: upgrade dependencies
 ```
 
-Types:
+## Changeset Workflow
 
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `style`: Code style changes (formatting, etc.)
-- `refactor`: Code refactoring
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
+BrumKit uses [Changesets](https://github.com/changesets/changesets) for versioning and changelog generation.
 
-### 4. Testing
+**Every PR to `main` must include a changeset file** (except the automated "Version Packages" PR created by the release bot).
 
-Testing is critical to maintaining code quality:
+### Creating a Changeset
 
-- **All new features must have tests**
-- **Maintain 80%+ test coverage** across all packages
-- **Follow TDD approach**: Write tests before implementation
-- Run tests before committing: `pnpm test`
-- Check coverage: `pnpm test:coverage`
-- Component tests should use Testing Library best practices
-- Use Vitest 4.0.18 as the testing framework
+Before opening a PR, run:
 
 ```bash
-# Run all tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Generate coverage report
-pnpm test:coverage
-
-# Test specific package
-pnpm --filter @repo/auth test
+pnpm changeset
 ```
 
-### 5. Code Review
+The interactive prompt will ask you to:
 
-- Keep pull requests focused and small
-- Reference related issues
-- Respond to feedback constructively
-- Update documentation as needed
+1. Select which packages are affected by your change
+2. Choose the bump type: `patch` (bug fix), `minor` (new feature), or `major` (breaking change)
+3. Write a summary of the change (this becomes the CHANGELOG entry)
 
-## Cursor Rules
+This generates a `.changeset/<random-name>.md` file — commit it alongside your code changes.
 
-This project follows specific coding patterns defined in `.cursor/rules`. Key points:
+### Versioning Strategy
 
-- Use Server Actions for mutations (not REST APIs)
-- Use `ActionResult<T>` pattern for server action returns
-- Use React Hook Form + Zod for form validation
-- Use `<FieldError>` component for validation errors
-- Use Tailwind CSS v4 (CSS-first configuration)
-- Follow Next.js App Router patterns
-- Use i18n for all user-facing strings
-- ESLint 10 with flat config
-- TypeScript strict mode
+All `@repo/*` packages and the `web` app are **linked** and versioned together. A `minor` changeset bumps all of them to the same version. The `config-*` packages version independently on their own patch cycle.
+
+### Release Flow
+
+1. Contributor creates a changeset and opens a PR
+2. CI verifies the changeset is present
+3. PR is merged to `main`
+4. The release workflow automatically creates a "chore: version packages" PR
+5. Merging that PR bumps all package versions, updates `CHANGELOG.md`, creates a git tag `v{version}`, and publishes a GitHub Release
 
 ## Available Scripts
 
@@ -169,109 +233,114 @@ pnpm test:watch       # Watch mode
 pnpm test:coverage    # With coverage report
 
 # Code Quality
-pnpm lint             # Lint all packages (ESLint 10)
-pnpm type-check       # Type check all packages
+pnpm lint             # Lint all packages
+pnpm type-check       # TypeScript type check
 pnpm format           # Format code with Prettier
-pnpm format:check     # Check formatting
+pnpm format:check     # Check formatting without writing
 
 # Database
-pnpm --filter @repo/database db:generate      # Generate Prisma Client
+pnpm --filter @repo/database db:generate      # Generate Prisma client
 pnpm --filter @repo/database db:migrate       # Run migrations
+pnpm --filter @repo/database db:push          # Push schema without migration file
 pnpm --filter @repo/database db:seed          # Seed database
 pnpm --filter @repo/database db:studio        # Open Prisma Studio
+
+# Changesets
+pnpm changeset                                # Create a new changeset
+pnpm changeset status                         # Show pending changesets
+pnpm changeset version                        # Apply changesets and bump versions (CI only)
 
 # Clean
 pnpm clean            # Remove node_modules and build artifacts
 ```
 
-## Pull Request Process
+## Submitting a Pull Request
 
-1. **Write Tests First** (TDD):
-   - Write failing tests for new features
-   - Implement code to pass tests
-   - Refactor while keeping tests green
+1. **Write tests first** (TDD Red-Green-Refactor)
+2. Ensure all checks pass locally:
 
-2. **Ensure Quality**:
-   - All tests pass: `pnpm test`
-   - Coverage ≥80%: `pnpm test:coverage`
-   - No linting errors: `pnpm lint`
-   - No type errors: `pnpm type-check`
-   - Code formatted: `pnpm format`
+```bash
+pnpm lint
+pnpm type-check
+pnpm test:coverage
+pnpm build
+```
 
-3. **Update Documentation**:
-   - Update README if adding features
-   - Add JSDoc comments for public APIs
-   - Update CHANGELOG.md if needed
+3. **Create a changeset** (required for all feature/fix PRs):
 
-4. **Create Pull Request**:
-   - Clear title and description
-   - Reference related issues
-   - Include screenshots for UI changes
-   - List testing steps
-   - Ensure CI passes
+```bash
+pnpm changeset
+```
 
-## Project Structure
+4. Push your branch and open a PR. The PR template at [`.github/pull_request_template.md`](.github/pull_request_template.md) guides you through the required checklist.
+
+5. Ensure CI passes. The CI pipeline runs: lint (including changeset check), type-check, test (with coverage), build, and Docker smoke test.
+
+## Setting Up Code Coverage (CODECOV_TOKEN)
+
+The CI pipeline uploads coverage reports to [Codecov](https://codecov.io/) after each test run.
+
+### For Repository Maintainers
+
+1. Sign in to [codecov.io](https://codecov.io/) with your GitHub account.
+2. Add the `buildinclicks/brumkit` repository.
+3. Copy the **CODECOV_TOKEN** from the Codecov repository settings.
+4. Add it as a GitHub Actions secret: **Settings → Secrets and variables → Actions → New repository secret** — name: `CODECOV_TOKEN`.
+
+### For Fork Contributors
+
+Coverage uploads are optional for forks. The CI step uses `fail_ci_if_error: false`, so a missing `CODECOV_TOKEN` will not block your PR. If you want coverage reports on your fork:
+
+1. Sign in to [codecov.io](https://codecov.io/) with your GitHub account.
+2. Add your forked repository.
+3. Add the `CODECOV_TOKEN` secret to your fork's GitHub Actions secrets.
+
+Coverage reports are visible in the PR checks once the token is configured.
+
+## Package Structure
 
 ```
 brumkit/
 ├── apps/
-│   └── web/                 # Next.js application (Next.js 15, React 19)
+│   └── web/                 # Next.js 15 application (App Router)
 ├── packages/
-│   ├── auth/                # Authentication & authorization (Auth.js 5, CASL)
-│   ├── database/            # Prisma schema & client (Prisma 6.19.2)
+│   ├── auth/                # Auth.js v5 + CASL authorization
+│   ├── database/            # Prisma schema & client (PostgreSQL)
 │   ├── email/               # Email templates & sending (Resend, React Email)
 │   ├── rate-limit/          # Redis rate limiting (ioredis, Upstash)
-│   ├── ui/                  # Shared UI components (shadcn/ui, Tailwind CSS 4)
-│   ├── validation/          # Zod schemas (Zod 3.23.8)
+│   ├── ui/                  # Shared shadcn/ui components (Tailwind CSS 4)
+│   ├── validation/          # Zod schemas shared across apps
 │   ├── types/               # Shared TypeScript types
-│   ├── utils/               # Utility functions
-│   ├── config-eslint/       # ESLint 10 configurations (flat config)
-│   ├── config-typescript/   # TypeScript configurations (strict mode)
-│   ├── config-tailwind/     # Tailwind CSS 4 configurations
-│   └── config-vitest/       # Vitest 4 configurations
+│   ├── utils/               # Shared utility functions
+│   ├── config-eslint/       # ESLint 10 flat config
+│   ├── config-typescript/   # TypeScript strict config
+│   ├── config-tailwind/     # Tailwind CSS 4 config
+│   └── config-vitest/       # Vitest 4 config
 ├── docs/                    # Documentation
-│   └── open-source-version/
-│       └── release-0.1/     # Release 0.1 documentation
-└── docker/                  # Docker configurations
+└── .changeset/              # Pending changeset files
 ```
 
 ## Technology Stack
 
-### Core
-
-- **Next.js**: 15.5.12 (App Router)
-- **React**: 19.2.4
-- **TypeScript**: 5.9.3 (strict mode)
-- **Node.js**: >= 20.19.0
-
-### Styling
-
-- **Tailwind CSS**: 4.1.18 (CSS-first config)
-- **shadcn/ui**: Component library
-
-### Backend
-
-- **Prisma**: 6.19.2 (PostgreSQL)
-- **Auth.js**: 5.0.0-beta.25
-- **CASL**: Authorization
-
-### Testing
-
-- **Vitest**: 4.0.18
-- **React Testing Library**: 16.3.1
-- **Coverage**: 80%+ required
-
-### Tooling
-
-- **pnpm**: 10.0.0 (workspace management)
-- **Turborepo**: Monorepo orchestration
-- **ESLint**: 10.0.0 (flat config)
-- **Prettier**: Code formatting
+| Concern         | Technology                     | Version       |
+| --------------- | ------------------------------ | ------------- |
+| Framework       | Next.js (App Router)           | 15.5.19       |
+| Language        | TypeScript (strict)            | 5.9.3         |
+| Runtime         | Node.js                        | ≥ 20.19.0     |
+| Package manager | pnpm                           | ≥ 10.0.0      |
+| Styling         | Tailwind CSS (CSS-first)       | 4.3.0         |
+| Database ORM    | Prisma                         | 6.19.2        |
+| Authentication  | Auth.js                        | 5.0.0-beta.25 |
+| Testing         | Vitest + React Testing Library | 4.1.8         |
+| Monorepo        | Turborepo + pnpm workspaces    | 2.9.16        |
+| Linting         | ESLint (flat config)           | 10.x          |
+| Formatting      | Prettier                       | 3.x           |
+| Versioning      | Changesets                     | 2.x           |
 
 ## Questions?
 
-- Check existing issues and discussions
+- Check [existing issues](https://github.com/buildinclicks/brumkit/issues) and [discussions](https://github.com/buildinclicks/brumkit/discussions)
 - Open a new issue for bugs or feature requests
-- Join our community discussions
+- Report security vulnerabilities privately via [GitHub Security Advisories](https://github.com/buildinclicks/brumkit/security/advisories/new) — see [SECURITY.md](SECURITY.md)
 
-Thank you for contributing! 🎉
+Thank you for contributing!
