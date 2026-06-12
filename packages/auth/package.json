@@ -34,6 +34,7 @@
     "@repo/config-vitest": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
+    "next": "^15.5.18",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
