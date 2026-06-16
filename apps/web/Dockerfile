@@ -36,7 +36,7 @@ RUN npm install --global pnpm@10.0.0 --no-fund --no-audit
 COPY --from=base /app/out/json/ .
 COPY --from=base /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Copy full pruned source after dependency installation
 COPY --from=base /app/out/full/ .

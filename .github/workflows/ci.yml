@@ -49,8 +49,11 @@ jobs:
       - name: Run ESLint
         run: pnpm lint
 
-      - name: Check changeset (skip for Version Packages PR)
-        if: github.event_name == 'pull_request' && github.head_ref != 'changeset-release/main'
+      - name: Check changeset (skip for Version Packages PR and release branches)
+        if: >
+          github.event_name == 'pull_request' &&
+          github.head_ref != 'changeset-release/main' &&
+          !startsWith(github.head_ref, 'release/')
         run: pnpm changeset status --since=origin/main
 
   typecheck:
@@ -101,7 +104,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
+          POSTGRES_DB: test_db_test
         ports:
           - 5432:5432
         options: >-
@@ -121,8 +124,8 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db_test
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db_test
       REDIS_URL: redis://localhost:6379
       NEXTAUTH_SECRET: test-secret-for-ci
       NEXTAUTH_URL: http://localhost:3000
