@@ -1,4 +1,146 @@
-# BrumKit v0.1.0 - Open Source Edition
+# BrumKit v1.0.0 — First Stable Release
+
+**Release Date**: June 12, 2026
+**Status**: Stable — Production Ready
+**Git Tag**: `v1.0.0`
+
+---
+
+## Overview
+
+BrumKit v1.0.0 is the first stable open-source release. Starting from the 0.1.0 pre-release
+foundation, the M1–M6 milestone track hardened the codebase with Docker support, an 80%+
+automated test coverage baseline, complete OSS governance, and a release engineering pipeline —
+delivering a starter kit that is ready to clone, configure, and ship.
+
+---
+
+## What's New in v1.0.0
+
+### Docker Support (M3)
+
+- **`apps/web/Dockerfile`** — multi-stage build (base → installer → builder → runner) using
+  Turbo prune for minimal production images.
+- **`docker-compose.full.yml`** — full production stack: Next.js app + PostgreSQL + Redis, fully
+  documented in the README and installation guide.
+- **CI Docker job** — `docker build` validates the image on every push to `main`.
+
+### 80%+ Test Coverage (M4)
+
+- Vitest thresholds (lines, functions, branches, statements) enforce ≥ 80% across all packages.
+- Test suite expanded to cover middleware, server actions, API routes, query hooks, and UI components.
+- Zero skipped tests — all previously skipped profile tests were replaced with Zod schema tests.
+- CI runs `pnpm test:coverage` and fails if thresholds are not met.
+
+### Complete OSS Governance (M1 + M5)
+
+- `SECURITY.md` — supported versions and responsible disclosure policy.
+- `CODE_OF_CONDUCT.md` — Contributor Covenant.
+- `CONTRIBUTING.md` — comprehensive guide covering TDD workflow, changeset versioning,
+  Codecov setup, PR checklist, and coding standards with `.cursor/rules/` references.
+- Dependabot weekly scans and dependency-review CI gate.
+- Changesets-based versioning with a GitHub Actions release pipeline (`release.yml`).
+
+### Accurate Documentation (M1 + M5)
+
+- README updated: correct port (4000), env file instructions, real repo URL
+  (`github.com/buildinclicks/brumkit`), Docker quick-start, and community links.
+- `.env.development.example` now correctly sets `NEXT_PUBLIC_APP_URL` and `NEXTAUTH_URL`
+  to `http://localhost:4000`.
+- [Installation & setup guide](docs/guide/v1.0.1-pre-release/installation-and-setup.md) covers
+  both manual and Docker-based setup end-to-end.
+- [ROADMAP.md](ROADMAP.md) documents the post-1.0 upgrade track.
+
+### Release Engineering (M5 + M6)
+
+- pnpm catalog introduced for shared dependency version management across the monorepo.
+- All intra-repo `@repo/*` dependencies use `workspace:*` consistently.
+- `pnpm changeset version` pipeline: two changesets (minor M5 + major M6) bumped all packages
+  from `0.1.0` → `1.0.0`.
+
+---
+
+## Breaking Changes
+
+**None.** The 0.1.0 → 1.0.0 version increment is a stability and maturity declaration.
+There are no API changes, schema migrations, or configuration breaking changes.
+
+---
+
+## Migration Guide
+
+For developers upgrading from 0.1.0:
+
+```bash
+git pull origin main
+pnpm install
+pnpm --filter @repo/database db:generate
+pnpm build
+```
+
+No database migrations are required. Environment variables are unchanged except:
+
+- `NEXT_PUBLIC_APP_URL` and `NEXTAUTH_URL` in `.env.development` should be `http://localhost:4000`
+  (if you copied from an older `.env.development.example` that used port 3000, update these now).
+
+---
+
+## Known Issues / Deferred Items
+
+| Item               | Status             | Notes                                                            |
+| ------------------ | ------------------ | ---------------------------------------------------------------- |
+| README screenshots | Deferred to v1.0.1 | Section exists; full auth-flow and dashboard screenshots pending |
+| Next.js 15 → 16    | Post-1.0 M7 track  | Waiting for stable ecosystem compatibility                       |
+| Prisma 6 → 7       | Post-1.0 M7 track  | Major architectural changes require dedicated migration          |
+| OAuth providers    | OSS edition scope  | Google/GitHub OAuth available in Pro edition                     |
+| Admin dashboard UI | Post-1.0           | Deferred to allow focus on core stability                        |
+
+---
+
+## What's Next
+
+- **M7 — Post-1.0 Major Upgrades**: Next.js 16, Prisma 7, React 19 stable, and ecosystem
+  upgrades tracked in [ROADMAP.md](ROADMAP.md).
+- **Pro edition**: Full-featured starter with OAuth, admin dashboard, real-time features,
+  background jobs, and advanced RBAC — see [buildinclicks.com](https://buildinclicks.com) for
+  comparison.
+
+---
+
+## Technology Stack
+
+| Layer           | Package        | Version       |
+| --------------- | -------------- | ------------- |
+| Framework       | Next.js        | 15.5.19       |
+| Runtime         | React          | 19.2.7        |
+| Language        | TypeScript     | 5.9.3         |
+| Styling         | Tailwind CSS   | 4.3.0         |
+| Auth            | Auth.js        | 5.0.0-beta.25 |
+| ORM             | Prisma         | 6.19.2        |
+| Validation      | Zod            | 3.23.8        |
+| Data fetching   | TanStack Query | 5.101.0       |
+| i18n            | next-intl      | 4.13.0        |
+| Testing         | Vitest         | 4.1.8         |
+| Monorepo        | Turborepo      | 2.9.16        |
+| Package manager | pnpm           | 10.0.0        |
+| Node.js         | —              | ≥ 20.19.0     |
+
+---
+
+## Contributors
+
+- [@buildinclicks](https://github.com/buildinclicks) — BuildInClicks Team
+
+---
+
+## Support
+
+- **Docs**: [Installation & setup guide](docs/guide/v1.0.1-pre-release/installation-and-setup.md)
+- **Issues**: [github.com/buildinclicks/brumkit/issues](https://github.com/buildinclicks/brumkit/issues)
+- **Discussions**: [github.com/buildinclicks/brumkit/discussions](https://github.com/buildinclicks/brumkit/discussions)
+- **License**: MIT
+
+---
 
 **Release Date**: February 17, 2026  
 **Status**: Production Ready
