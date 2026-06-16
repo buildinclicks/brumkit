@@ -2,9 +2,9 @@
 
 # 🚀 BrumKit - Open Source Edition (Lite)
 
-**Version 0.1.0** (pre-1.0.0 stable) | A production-ready Next.js 15 starter kit with authentication, authorization, and essential features. See [ROADMAP.md](ROADMAP.md) for the path to v1.0.0.
+**Version 2.0.0** (stable) | A production-ready Next.js 16 starter kit with authentication, authorization, and essential features. See [ROADMAP.md](ROADMAP.md) for what's planned next.
 
-Start building your SaaS faster with our Next.js 15 + Prisma + Tailwind CSS v4 starter kit.
+Start building your SaaS faster with our Next.js 16 + Prisma 7 + Tailwind CSS v4 starter kit.
 
 👉 **Looking for a full-featured SaaS Starter Kit?** [Check out BrumKit Pro](#comparing-oss-vs-pro-version)
 
@@ -13,7 +13,7 @@ Start building your SaaS faster with our Next.js 15 + Prisma + Tailwind CSS v4 s
 - 🏗️ **Production-grade architecture**: Scalable monorepo with Turborepo.
 - 🔐 **Comprehensive Security**: Built-in RBAC and CASL-powered permissions.
 - 🧪 **Strict Quality**: 80%+ test coverage requirement with Vitest.
-- ⚡ **Modern Stack**: Next.js 15, Prisma 6, Tailwind CSS 4.
+- ⚡ **Modern Stack**: Next.js 16, Prisma 7, TypeScript 6, Tailwind CSS 4.
 - 📦 **Type-Safe**: End-to-end TypeScript implementation.
 
 ---
@@ -23,7 +23,7 @@ Start building your SaaS faster with our Next.js 15 + Prisma + Tailwind CSS v4 s
 ### Core Architecture
 
 - 📦 **Turborepo monorepo**: Optimized build system and pnpm workspaces.
-- 🏗️ **Next.js 15 (App Router)**: The latest features of React server components.
+- 🏗️ **Next.js 16 (App Router)**: The latest features of React server components.
 - 🎨 **Shadcn UI + Tailwind 4**: Clean, modern, and highly customizable UI system.
 - 🗄️ **PostgreSQL + Prisma**: Reliable and type-safe database management.
 - 🔐 **Auth.js v5**: Robust authentication for Next.js applications.
@@ -47,9 +47,9 @@ BrumKit provides a rock-solid foundation for high-performance applications:
 
 | Category       | Technology                                   | Description                                                            |
 | -------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
-| **Framework**  | [Next.js 15](https://nextjs.org/)            | Modern React framework with App Router and Server Components.          |
+| **Framework**  | [Next.js 16](https://nextjs.org/)            | Modern React framework with App Router and Server Components.          |
 | **Styling**    | [Tailwind CSS 4](https://tailwindcss.com/)   | A utility-first CSS framework for rapid UI development.                |
-| **Database**   | [Prisma 6](https://www.prisma.io/)           | Type-safe ORM for Node.js and TypeScript.                              |
+| **Database**   | [Prisma 7](https://www.prisma.io/)           | Type-safe ORM for Node.js and TypeScript.                              |
 | **Auth**       | [Auth.js](https://authjs.dev/)               | Authentication for Next.js applications (formerly NextAuth).           |
 | **Monorepo**   | [Turborepo](https://turbo.build/)            | High-performance build system for JavaScript and TypeScript codebases. |
 | **Validation** | [Zod](https://zod.dev/)                      | TypeScript-first schema validation with static type inference.         |
@@ -133,7 +133,7 @@ The application will be available at [http://localhost:4000](http://localhost:40
 ```
 brumkit/
 ├── apps/
-│   └── web/                 # Next.js 15 application
+│   └── web/                 # Next.js 16 application
 ├── packages/
 │   ├── auth/                # Auth.js integration
 │   ├── database/            # Prisma schema & client
@@ -210,7 +210,7 @@ See the [Self-Hosting with Docker guide](docs/deployment/self-hosting-docker.md)
 
 ![Login Page](apps/web/public/images/brumkit_banner.png)
 
-> Full screenshots of the auth flow, dashboard, and profile pages will be added before the v1.0.0 release.
+> Full screenshots of the auth flow, dashboard, and profile pages are planned for a future release.
 
 ---
 
@@ -239,10 +239,12 @@ Open [http://localhost:4000](http://localhost:4000) in your browser.
 | Guide                                                                           | Description                              |
 | ------------------------------------------------------------------------------- | ---------------------------------------- |
 | [Installation & setup](docs/guide/v1.0.1-pre-release/installation-and-setup.md) | Full manual and Docker setup walkthrough |
+| [Upgrade guides](docs/development/)                                             | v1.0.0 → v2.0.0 migration per package    |
 | [Self-hosting with Docker](docs/deployment/self-hosting-docker.md)              | Production Docker deployment             |
 | [Vercel deployment](docs/deployment/vercel-deployment-guide.md)                 | Managed hosting on Vercel                |
-| [ROADMAP.md](ROADMAP.md)                                                        | Milestone progress and v1.0.0 plan       |
+| [ROADMAP.md](ROADMAP.md)                                                        | Milestone progress and what's next       |
 | [CHANGELOG.md](CHANGELOG.md)                                                    | Version history                          |
+| [RELEASE_NOTES.md](RELEASE_NOTES.md)                                            | Detailed release notes (v1.0.0, v2.0.0)  |
 
 ---
 
