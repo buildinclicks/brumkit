@@ -27,20 +27,22 @@ export function NotificationList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadNotifications = async () => {
-    setLoading(true);
-    setError(null);
-    const result = await getNotifications();
-    if (result.success) {
-      setNotifications(result.data);
-    } else {
-      setError(result.error);
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
-    loadNotifications();
+    let active = true;
+
+    void getNotifications().then((result) => {
+      if (!active) return;
+      if (result.success) {
+        setNotifications(result.data);
+      } else {
+        setError(result.error);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleMarkAsRead = async (id: string) => {
