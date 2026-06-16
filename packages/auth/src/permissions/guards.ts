@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@repo/database';
 
 import { auth } from '../config/auth';
 

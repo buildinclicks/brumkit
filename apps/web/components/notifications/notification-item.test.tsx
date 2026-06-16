@@ -4,7 +4,7 @@ import { renderWithProviders, screen, userEvent } from '@/lib/test';
 
 import { NotificationItem } from './notification-item';
 
-import type { Notification } from '@prisma/client';
+import type { Notification } from '@repo/database';
 
 describe('NotificationItem', () => {
   const mockNotification: Notification = {

@@ -53,7 +53,7 @@ describe('emailSchema', () => {
       const result = emailSchema.safeParse('userexample.com');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toContain('email.invalid');
+        expect(result.error.issues[0].message).toContain('email.invalid');
       }
     });
 
@@ -77,7 +77,7 @@ describe('emailSchema', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         // Could be either too_short or invalid format, depends on Zod validation order
-        const message = result.error.errors[0].message;
+        const message = result.error.issues[0].message;
         expect(
           message.includes('email.too_short') ||
             message.includes('email.invalid')
@@ -90,7 +90,7 @@ describe('emailSchema', () => {
       const result = emailSchema.safeParse(longEmail);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toContain('email.too_long');
+        expect(result.error.issues[0].message).toContain('email.too_long');
       }
     });
 

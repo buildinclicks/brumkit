@@ -34,7 +34,7 @@ describe('slugSchema', () => {
       const result = slugSchema.safeParse('hello world');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('slug.invalid_format');
+        expect(result.error.issues[0].message).toBe('slug.invalid_format');
       }
     });
 
@@ -72,7 +72,7 @@ describe('slugSchema', () => {
       const result = slugSchema.safeParse('ab');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('slug.too_short');
+        expect(result.error.issues[0].message).toBe('slug.too_short');
       }
     });
 
@@ -80,7 +80,7 @@ describe('slugSchema', () => {
       const result = slugSchema.safeParse('a'.repeat(256));
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('slug.too_long');
+        expect(result.error.issues[0].message).toBe('slug.too_long');
       }
     });
 

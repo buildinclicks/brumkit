@@ -4,10 +4,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
     "types": ["@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],

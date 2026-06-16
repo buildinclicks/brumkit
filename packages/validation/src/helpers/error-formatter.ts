@@ -1,4 +1,4 @@
-import { ZodError, ZodIssue } from 'zod';
+import { ZodError, type ZodIssue } from 'zod';
 
 /**
  * Formatted validation error
@@ -16,7 +16,7 @@ export interface FormattedValidationError {
  * @returns Array of formatted errors
  */
 export function formatZodError(error: ZodError): FormattedValidationError[] {
-  return error.errors.map((err: ZodIssue) => ({
+  return error.issues.map((err: ZodIssue) => ({
     field: err.path.join('.'),
     message: err.message,
     code: err.code,
@@ -34,7 +34,7 @@ export function getFieldError(
   error: ZodError,
   field: string
 ): string | undefined {
-  return error.errors.find((err) => err.path.join('.') === field)?.message;
+  return error.issues.find((err) => err.path.join('.') === field)?.message;
 }
 
 /**
@@ -45,7 +45,7 @@ export function getFieldError(
  * @returns Array of error messages
  */
 export function getFieldErrors(error: ZodError, field: string): string[] {
-  return error.errors
+  return error.issues
     .filter((err) => err.path.join('.') === field)
     .map((err) => err.message);
 }
@@ -59,7 +59,7 @@ export function getFieldErrors(error: ZodError, field: string): string[] {
 export function zodErrorToObject(error: ZodError): Record<string, string> {
   const errors: Record<string, string> = {};
 
-  error.errors.forEach((err) => {
+  error.issues.forEach((err) => {
     const field = err.path.join('.');
     if (!errors[field]) {
       errors[field] = err.message;
@@ -77,5 +77,5 @@ export function zodErrorToObject(error: ZodError): Record<string, string> {
  * @returns true if field has error, false otherwise
  */
 export function hasFieldError(error: ZodError, field: string): boolean {
-  return error.errors.some((err) => err.path.join('.') === field);
+  return error.issues.some((err) => err.path.join('.') === field);
 }

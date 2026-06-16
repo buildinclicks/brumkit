@@ -17,7 +17,7 @@ const packageDir = join(__dirname, '..');
 const TEST_DB_NAME = process.env.TEST_DB_NAME || 'broom_kit_test';
 const TEST_DATABASE_URL =
   process.env.TEST_DATABASE_URL ||
-  `postgresql://postgres:postgres@127.0.0.1:5432/${TEST_DB_NAME}`;
+  'postgresql://postgres:postgres@127.0.0.1:5433/broom_kit_test';
 
 console.log('🔧 Setting up test database...');
 console.log(`Database: ${TEST_DB_NAME}`);

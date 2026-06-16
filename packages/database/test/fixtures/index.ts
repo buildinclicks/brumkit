@@ -7,7 +7,7 @@
 
 import { faker } from '@faker-js/faker';
 import { hash } from 'bcryptjs';
-import type { Prisma, NotificationType } from '@prisma/client';
+import type { Prisma, NotificationType } from '@repo/database';
 
 /**
  * Generate a test user

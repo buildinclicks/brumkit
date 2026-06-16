@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@repo/database/enums';
 import { emailRule } from '../rules/email.rules';
 import { usernameSchema } from '../rules/username.rules';
 import { passwordSchema } from '../rules/password.rules';
@@ -20,7 +20,7 @@ export const createUserSchema = z.object({
   password: passwordSchema.optional(), // Optional for OAuth-only users
   bio: z.string().max(500, ValidationMessages.USER_BIO_TOO_LONG).optional(),
   image: z.string().url(ValidationMessages.USER_IMAGE_INVALID).optional(),
-  role: z.nativeEnum(UserRole).optional(),
+  role: z.enum(UserRole).optional(),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
@@ -53,7 +53,7 @@ export type UpdateUserProfileInput = z.infer<typeof updateUserProfileSchema>;
 
 export const updateUserSchema = updateUserProfileSchema.extend({
   email: emailRule.optional,
-  role: z.nativeEnum(UserRole).optional(),
+  role: z.enum(UserRole).optional(),
 });
 
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
@@ -63,7 +63,7 @@ export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 // ============================================
 
 export const deleteUserSchema = z.object({
-  id: z.string().cuid(ValidationMessages.CUID_INVALID),
+  id: z.cuid({ error: ValidationMessages.CUID_INVALID }),
 });
 
 export type DeleteUserInput = z.infer<typeof deleteUserSchema>;

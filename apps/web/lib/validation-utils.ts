@@ -9,7 +9,7 @@ import type { ZodError } from 'zod';
 export function mapZodErrorToKeys(error: ZodError): Record<string, string> {
   const fieldErrors: Record<string, string> = {};
 
-  error.errors.forEach((err) => {
+  error.issues.forEach((err) => {
     const fieldName = err.path.join('.');
     // The message IS the i18n key
     fieldErrors[fieldName] = err.message;

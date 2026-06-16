@@ -9,7 +9,7 @@ import { ValidationMessages } from '../messages';
  * - Automatically trimmed and lowercased
  */
 export const emailSchema = z
-  .string({ required_error: ValidationMessages.EMAIL_REQUIRED })
+  .string({ error: ValidationMessages.EMAIL_REQUIRED })
   .trim() // Trim FIRST, before validation
   .email(ValidationMessages.EMAIL_INVALID)
   .min(5, ValidationMessages.EMAIL_TOO_SHORT)

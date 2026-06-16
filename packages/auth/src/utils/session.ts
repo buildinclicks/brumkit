@@ -9,7 +9,7 @@ import {
 } from '../permissions/guards';
 
 import type { UserContext, Action, Subject } from '../permissions/abilities';
-import type { UserRole } from '@prisma/client';
+import type { UserRole } from '@repo/database';
 
 /**
  * Get the current authenticated session
