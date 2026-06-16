@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-06-12
+
+> **First stable open-source release.** BrumKit v1.0.0 is a production-ready Next.js 15 starter kit
+> delivering a complete auth/RBAC foundation, Docker-first developer experience, 80%+ automated test
+> coverage, and full OSS governance — ready to clone, build on, and ship.
+
+### Highlights (M1–M6 cumulative)
+
+- **Full auth foundation** — email/password authentication, email verification, password reset, JWT
+  sessions via Auth.js v5, Redis rate limiting, and CASL-powered RBAC with four roles
+  (USER, MODERATOR, ADMIN, SUPER_ADMIN)
+- **Docker support** — `apps/web/Dockerfile` (multi-stage, Turbo prune) and
+  `docker-compose.full.yml` for a one-command production stack
+- **80%+ test coverage** — enforced by Vitest thresholds and CI (`pnpm test:coverage`); zero skipped
+  tests; coverage includes middleware, server actions, API routes, hooks, and UI components
+- **OSS governance** — `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `LICENSE`,
+  Changesets versioning, Dependabot weekly scans, and a GitHub Actions release pipeline
+- **Accurate documentation** — README with correct ports (4000), env setup, Docker instructions,
+  installation guide, and ROADMAP
 
 ### Added
 
@@ -13,21 +31,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GitHub Actions release workflow (Version Packages PR, tags, GitHub Releases)
 - Dependabot weekly dependency updates and dependency-review CI gate
 - Comprehensive test suite expansion: middleware, hooks, API routes, UI components, and validation schemas
-- CI coverage enforcement at 80% threshold
+- CI coverage enforcement at 80% threshold via Vitest thresholds
 - [Installation & setup guide](docs/guide/v1.0.1-pre-release/installation-and-setup.md) for manual and Docker workflows
 - [ROADMAP.md](ROADMAP.md) tracking progress toward v1.0.0
+- `apps/web/Dockerfile` multi-stage build (base → installer → builder → runner) with Turbo prune
+- `docker-compose.full.yml` full production stack (app + PostgreSQL + Redis)
 
 ### Changed
 
 - Updated `CONTRIBUTING.md` with changeset workflow, TDD standards, and Codecov setup
 - Improved PR template with BrumKit Contribution Standards checklist
 - Expanded `apps/web` Vitest coverage to include `app/actions/**` and `app/api/**`
-- README: documentation index, deployment links, and pre-1.0.0 status note
+- README: documentation index, deployment links, and v1.0.0 stable status
+- `.env.development.example` aligned to port 4000 (`NEXT_PUBLIC_APP_URL`, `NEXTAUTH_URL`)
 
 ### Fixed
 
 - Database port configuration in `docker-compose.yml` for local development
 - Removed skipped profile form tests; replaced HTML5 email validation tests with Zod schema tests
+
+### Breaking Changes
+
+None. 0.1.0 → 1.0.0 is a stability and maturity declaration, not an API break.
+
+### Migration Guide
+
+```bash
+git pull origin main
+pnpm install
+pnpm --filter @repo/database db:generate
+pnpm build
+```
+
+### Known Issues / Deferred
+
+- **README screenshots**: Section exists; full auth-flow and dashboard screenshots deferred to v1.0.1.
+- **Next.js 15 → 16 upgrade**: Deferred to post-1.0 major upgrade track (M7).
+- **Prisma 6 → 7 upgrade**: Deferred; major architectural changes require a dedicated migration.
+- **OAuth providers** (Google, GitHub): Not included in OSS edition.
+
+### Contributors
+
+- [@buildinclicks](https://github.com/buildinclicks) — BuildInClicks Team
 
 ## [0.1.0] - 2026-02-17
 

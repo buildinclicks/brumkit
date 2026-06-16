@@ -1,6 +1,6 @@
 {
   "name": "@repo/auth",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Authentication and authorization package with Auth.js v5 and CASL for Brumkit",
   "main": "./src/index.ts",
