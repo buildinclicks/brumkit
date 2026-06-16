@@ -411,8 +411,8 @@ importers:
   packages/database:
     dependencies:
       '@prisma/client':
-        specifier: ^7.8.0
-        version: 7.8.0(prisma@6.19.2(typescript@6.0.3))(typescript@6.0.3)
+        specifier: ^6.19.2
+        version: 6.19.3(prisma@6.19.2(typescript@6.0.3))(typescript@6.0.3)
     devDependencies:
       '@faker-js/faker':
         specifier: ^10.2.0
