@@ -85,11 +85,18 @@ if (typeof window !== 'undefined') {
   };
 }
 
-// Establish API mocking before all tests
+// Establish API mocking before all tests.
+// MSW 2.14+ throws if listen() is called on an already-listening server
+// (changed from a silent no-op). Guard the call so vitest workers that share
+// the same server instance don't throw on the second invocation.
 beforeAll(() => {
-  server.listen({
-    onUnhandledRequest: 'warn', // Warn on unhandled requests instead of erroring
-  });
+  try {
+    server.listen({
+      onUnhandledRequest: 'warn',
+    });
+  } catch {
+    // Server is already listening (e.g. shared worker, re-entrant setup)
+  }
 });
 
 // Reset any request handlers that are declared in a test
