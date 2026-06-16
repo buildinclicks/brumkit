@@ -52,7 +52,7 @@ jobs:
       - name: Check changeset (skip for Version Packages PR and release branches)
         if: >
           github.event_name == 'pull_request' &&
-          github.head_ref != 'changeset-release/main' &&
+          !startsWith(github.head_ref, 'changeset-release/') &&
           !startsWith(github.head_ref, 'release/')
         run: pnpm changeset status --since=origin/main
 
