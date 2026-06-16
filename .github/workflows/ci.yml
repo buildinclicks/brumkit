@@ -59,6 +59,9 @@ jobs:
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
+    env:
+      # Required by prisma.config.ts when running `prisma generate` (no DB connection made)
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -180,6 +183,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      NEXTAUTH_SECRET: build-secret
+      NEXTAUTH_URL: http://localhost:3000
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/build_db
+      RESEND_API_KEY: re_dummy_key_for_build
+      NODE_ENV: production
     services:
       postgres:
         image: postgres:16-alpine
@@ -230,9 +239,3 @@ jobs:
 
       - name: Build all packages
         run: pnpm build
-        env:
-          NEXTAUTH_SECRET: build-secret
-          NEXTAUTH_URL: http://localhost:3000
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/build_db
-          RESEND_API_KEY: re_dummy_key_for_build
-          NODE_ENV: production

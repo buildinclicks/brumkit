@@ -11,10 +11,13 @@ export default mergeConfig(
       hookTimeout: 30000,
       coverage: {
         include: ['src/**/*.ts'],
-        exclude: ['src/index.ts', 'src/client.ts', 'src/test.ts'],
-        // Database package uses integration tests which don't show up in coverage
-        // The integration tests verify actual database operations are working
-        enabled: false, // Disable coverage for database package
+        exclude: [
+          'src/index.ts',
+          'src/client.ts',
+          'src/test.ts',
+          'src/enums.ts',
+          'src/generated/**',
+        ],
       },
     },
   })
