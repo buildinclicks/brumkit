@@ -9,22 +9,22 @@ catalog:
   '@types/react': ^19.2.17
   '@types/react-dom': ^19.2.3
 
-  # TypeScript
-  typescript: ^6.0.3
+  # TypeScript — v6 is an M7 major-upgrade track; keep on v5 until then
+  typescript: ^5.9.3
   '@types/node': ^25.9.3
 
   # Styling
   tailwindcss: ^4.3.1
 
-  # Validation
-  zod: ^4.4.3
+  # Validation — Zod v4 is an M7 major-upgrade track; keep on v3 until then
+  zod: ^3.23.8
 
   # Forms
   react-hook-form: ^7.79.0
   '@hookform/resolvers': ^5.4.0
 
-  # Notifications
-  sonner: ^2.0.7
+  # Notifications — Sonner v2 is an M7 major-upgrade track; keep on v1 until then
+  sonner: ^1.7.4
 
   # Testing
   vitest: ^4.1.9
@@ -35,7 +35,8 @@ catalog:
   eslint: ^10.5.0
 
   # Build tool (peer dep for vitest/vitejs-plugin-react)
-  vite: ^8.0.16
+  # Vite v8 is a major bump; keep on v7 until M7 or a dedicated upgrade PR
+  vite: ^7.3.5
 
   # Redis
   ioredis: ^5.11.1
