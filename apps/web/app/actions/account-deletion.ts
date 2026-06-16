@@ -8,6 +8,7 @@ import {
   deleteAccountSchema,
   type DeleteAccountInput,
   ValidationMessages,
+  zodErrorToObject,
 } from '@repo/validation';
 
 import type { ActionResult } from './auth';
@@ -32,11 +33,7 @@ export async function deleteAccount(
     // 2. Validate input
     const validatedData = deleteAccountSchema.safeParse(data);
     if (!validatedData.success) {
-      const fieldErrors = Object.fromEntries(
-        Object.entries(validatedData.error.flatten().fieldErrors).map(
-          ([key, value]) => [key, value?.[0] || 'Invalid value']
-        )
-      );
+      const fieldErrors = zodErrorToObject(validatedData.error);
       return {
         success: false,
         error: 'Validation failed',

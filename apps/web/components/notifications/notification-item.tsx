@@ -9,7 +9,7 @@ import {
 } from '@repo/ui';
 import Link from 'next/link';
 
-import type { Notification } from '@prisma/client';
+import type { Notification } from '@repo/database';
 
 interface NotificationItemProps {
   notification: Notification;

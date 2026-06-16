@@ -5,7 +5,7 @@ export default mergeConfig(
   nodeConfig,
   defineConfig({
     test: {
-      // Auth-specific test configuration
+      setupFiles: ['./test/setup.ts'],
     },
   })
 );

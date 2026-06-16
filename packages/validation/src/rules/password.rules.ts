@@ -10,7 +10,7 @@ import { ValidationMessages } from '../messages';
  * - Must contain at least one number
  */
 export const passwordSchema = z
-  .string({ required_error: ValidationMessages.PASSWORD_REQUIRED })
+  .string({ error: ValidationMessages.PASSWORD_REQUIRED })
   .min(8, ValidationMessages.PASSWORD_TOO_SHORT)
   .max(128, ValidationMessages.PASSWORD_TOO_LONG)
   .regex(/[A-Z]/, ValidationMessages.PASSWORD_NO_UPPERCASE)

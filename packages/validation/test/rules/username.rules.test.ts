@@ -61,7 +61,7 @@ describe('usernameSchema', () => {
       const result = usernameSchema.safeParse('john doe');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('username.invalid_format');
+        expect(result.error.issues[0].message).toBe('username.invalid_format');
       }
     });
 
@@ -74,7 +74,7 @@ describe('usernameSchema', () => {
       const result = usernameSchema.safeParse('ab');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('username.too_short');
+        expect(result.error.issues[0].message).toBe('username.too_short');
       }
     });
 
@@ -82,7 +82,7 @@ describe('usernameSchema', () => {
       const result = usernameSchema.safeParse('a'.repeat(21));
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('username.too_long');
+        expect(result.error.issues[0].message).toBe('username.too_long');
       }
     });
 

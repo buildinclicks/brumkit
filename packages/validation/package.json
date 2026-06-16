@@ -18,10 +18,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@repo/database": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@prisma/client": "^6.19.2",
     "@repo/config-typescript": "workspace:*",
     "@repo/config-vitest": "workspace:*",
     "@repo/types": "workspace:*",

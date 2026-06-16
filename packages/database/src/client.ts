@@ -3,18 +3,26 @@
  *
  * Ensures only one instance of Prisma Client exists across the application.
  * Handles Hot Module Replacement (HMR) in development.
+ * Lazy-initialized so importing @repo/database types does not require DATABASE_URL.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/prisma/client';
 
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting database connection limit during hot reloads.
 declare global {
   var prisma: PrismaClient | undefined;
 }
 
 const prismaClientSingleton = () => {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL is not defined');
+  }
+
+  const adapter = new PrismaPg({ connectionString });
+
   return new PrismaClient({
+    adapter,
     log:
       process.env.NODE_ENV === 'development'
         ? ['query', 'info', 'warn', 'error']
@@ -22,21 +30,40 @@ const prismaClientSingleton = () => {
   });
 };
 
-export const prisma = global.prisma || prismaClientSingleton();
+let _prisma: PrismaClient | undefined;
 
-if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
+export function getPrisma(): PrismaClient {
+  if (!_prisma) {
+    _prisma = global.prisma ?? prismaClientSingleton();
+    if (process.env.NODE_ENV !== 'production') {
+      global.prisma = _prisma;
+    }
+  }
+  return _prisma;
 }
 
-// Graceful shutdown
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_, prop) {
+    const client = getPrisma();
+    const value = client[prop as keyof PrismaClient];
+    return typeof value === 'function' ? value.bind(client) : value;
+  },
+});
+
 export async function disconnect() {
-  await prisma.$disconnect();
+  const client = _prisma ?? global.prisma;
+  if (client) {
+    await client.$disconnect();
+    _prisma = undefined;
+    if (process.env.NODE_ENV !== 'production') {
+      global.prisma = undefined;
+    }
+  }
 }
 
-// Connection health check
 export async function healthCheck(): Promise<boolean> {
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await getPrisma().$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
     console.error('Database health check failed:', error);

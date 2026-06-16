@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
-    "@casl/ability": "^6.7.1",
-    "@casl/react": "^4.0.0",
+    "@casl/ability": "^7.0.0",
+    "@casl/react": "^7.0.0",
     "@repo/database": "workspace:*",
     "@repo/validation": "workspace:*",
     "bcryptjs": "^3.0.3",
@@ -34,13 +34,13 @@
     "@repo/config-vitest": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "next": "^15.5.18",
+    "next": "^16.2.9",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@prisma/client": "^6.0.0",
-    "next": "^15.0.0",
+    "@prisma/client": "^7.0.0",
+    "next": "^16.0.0",
     "react": "^18.0.0 || ^19.0.0"
   }
 }

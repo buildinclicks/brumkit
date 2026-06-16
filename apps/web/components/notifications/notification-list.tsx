@@ -20,7 +20,7 @@ import { NotificationSkeleton } from '@/components/skeletons/notification-skelet
 
 import { NotificationItem } from './notification-item';
 
-import type { Notification } from '@prisma/client';
+import type { Notification } from '@repo/database';
 
 export function NotificationList() {
   const [notifications, setNotifications] = useState<Notification[]>([]);

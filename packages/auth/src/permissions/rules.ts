@@ -1,5 +1,5 @@
 import type { Action, Subject } from './abilities';
-import type { UserRole } from '@prisma/client';
+import type { UserRole } from '@repo/database';
 
 /**
  * Permission rules by role

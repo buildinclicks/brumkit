@@ -175,7 +175,7 @@ export async function requestEmailChange(
   } catch (error) {
     if (error instanceof ZodError) {
       const fieldErrors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const field = err.path.join('.');
         fieldErrors[field] = err.message;
       });
@@ -264,7 +264,7 @@ export async function verifyEmailChange(
   } catch (error) {
     if (error instanceof ZodError) {
       const fieldErrors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const field = err.path.join('.');
         fieldErrors[field] = err.message;
       });

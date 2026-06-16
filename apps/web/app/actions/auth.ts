@@ -1,12 +1,11 @@
 'use server';
 
-import { UserRole } from '@prisma/client';
 import {
   hashPassword,
   verifyMagicLinkToken,
   generateMagicLinkToken,
 } from '@repo/auth';
-import { db } from '@repo/database';
+import { UserRole, db } from '@repo/database';
 import { sendVerificationEmail } from '@repo/email';
 import { RedisRateLimiter } from '@repo/rate-limit';
 import {
@@ -142,7 +141,7 @@ export async function registerUser(
     // Handle Zod validation errors
     if (error instanceof ZodError) {
       const fieldErrors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const field = err.path.join('.');
         fieldErrors[field] = err.message;
       });
@@ -243,7 +242,7 @@ export async function loginUser(data: LoginInput): Promise<ActionResult> {
     // Handle Zod validation errors
     if (error instanceof ZodError) {
       const fieldErrors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const field = err.path.join('.');
         fieldErrors[field] = err.message;
       });
@@ -508,7 +507,7 @@ export async function resetPassword(
     if (error instanceof z.ZodError) {
       // Map Zod errors to field errors
       const fieldErrors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         if (err.path.length > 0) {
           const field = err.path[0] as string;
           fieldErrors[field] = err.message;

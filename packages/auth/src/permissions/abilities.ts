@@ -5,7 +5,7 @@ import {
   subject as detectSubjectType,
 } from '@casl/ability';
 
-import type { UserRole } from '@prisma/client';
+import type { UserRole } from '@repo/database';
 
 /**
  * Actions that can be performed on resources

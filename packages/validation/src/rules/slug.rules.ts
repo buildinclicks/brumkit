@@ -10,7 +10,7 @@ import { ValidationMessages } from '../messages';
  * - Cannot have consecutive hyphens
  */
 export const slugSchema = z
-  .string({ required_error: ValidationMessages.SLUG_INVALID })
+  .string({ error: ValidationMessages.SLUG_INVALID })
   .min(3, ValidationMessages.SLUG_TOO_SHORT)
   .max(255, ValidationMessages.SLUG_TOO_LONG)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, ValidationMessages.SLUG_INVALID);

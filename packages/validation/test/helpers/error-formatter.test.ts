@@ -93,12 +93,31 @@ describe('error-formatter helpers', () => {
 
     it('should only store the first error per field', () => {
       const multiErrorSchema = z.object({
-        value: z.string().min(5, 'too short').max(3, 'too long'),
+        value: z.string().min(5, 'too short').max(10, 'too long'),
       });
-      const error = getZodError(multiErrorSchema, { value: 'abcd' });
+      const error = getZodError(multiErrorSchema, { value: 'ab' });
       const obj = zodErrorToObject(error);
 
       expect(typeof obj['value']).toBe('string');
+      expect(obj['value']).toBe('too short');
+    });
+
+    it('should ignore subsequent errors for the same field', () => {
+      const error = new z.ZodError([
+        {
+          code: 'custom',
+          path: ['email'],
+          message: 'first error',
+        },
+        {
+          code: 'custom',
+          path: ['email'],
+          message: 'second error',
+        },
+      ]);
+      const obj = zodErrorToObject(error);
+
+      expect(obj.email).toBe('first error');
     });
   });
 

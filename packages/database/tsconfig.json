@@ -6,6 +6,6 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src/**/*.ts", "prisma/**/*.ts"],
+  "include": ["src/**/*.ts", "src/generated/**/*.ts", "prisma/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

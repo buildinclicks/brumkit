@@ -10,7 +10,7 @@ import {
   createUserWithPasswordFixture,
   createNotificationFixture,
 } from '../fixtures';
-import type { User, Notification, Prisma } from '@prisma/client';
+import type { User, Notification, Prisma } from '@repo/database';
 
 const db = getTestClient();
 

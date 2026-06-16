@@ -4,7 +4,7 @@ import { renderWithProviders, screen } from '@/lib/test';
 
 import { NotificationList } from './notification-list';
 
-import type { Notification } from '@prisma/client';
+import type { Notification } from '@repo/database';
 
 // Mock the notification actions
 vi.mock('@/app/actions/notification', () => ({

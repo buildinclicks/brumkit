@@ -11,22 +11,21 @@
  * ```
  */
 
-// Export Prisma Client instance
 export { prisma, disconnect, healthCheck } from './client';
 
-// Export alias for convenience
 export { prisma as db } from './client';
 
-// Re-export Prisma types for convenience
-export { Prisma, PrismaClient } from '@prisma/client';
+export {
+  Prisma,
+  PrismaClient,
+  UserRole,
+  NotificationType,
+} from './generated/prisma/client';
 
-// Re-export commonly used types
 export type {
   User,
   Account,
   Session,
   VerificationToken,
   Notification,
-  UserRole,
-  NotificationType,
-} from '@prisma/client';
+} from './generated/prisma/client';

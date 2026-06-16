@@ -33,7 +33,7 @@ describe('passwordSchema', () => {
       const result = passwordSchema.safeParse('password123');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('password.no_uppercase');
+        expect(result.error.issues[0].message).toBe('password.no_uppercase');
       }
     });
 
@@ -41,7 +41,7 @@ describe('passwordSchema', () => {
       const result = passwordSchema.safeParse('PASSWORD123');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('password.no_lowercase');
+        expect(result.error.issues[0].message).toBe('password.no_lowercase');
       }
     });
 
@@ -49,7 +49,7 @@ describe('passwordSchema', () => {
       const result = passwordSchema.safeParse('Password');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('password.no_number');
+        expect(result.error.issues[0].message).toBe('password.no_number');
       }
     });
 
@@ -57,7 +57,7 @@ describe('passwordSchema', () => {
       const result = passwordSchema.safeParse('Pass12');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('password.too_short');
+        expect(result.error.issues[0].message).toBe('password.too_short');
       }
     });
 
@@ -66,7 +66,7 @@ describe('passwordSchema', () => {
       const result = passwordSchema.safeParse(longPassword);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0].message).toBe('password.too_long');
+        expect(result.error.issues[0].message).toBe('password.too_long');
       }
     });
 

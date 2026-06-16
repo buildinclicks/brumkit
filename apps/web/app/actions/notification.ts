@@ -4,7 +4,7 @@ import { auth } from '@repo/auth';
 import { db } from '@repo/database';
 
 import type { ActionResult } from './auth';
-import type { Notification } from '@prisma/client';
+import type { Notification } from '@repo/database';
 
 /**
  * Get all notifications for the current user

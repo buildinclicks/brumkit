@@ -10,7 +10,7 @@ import { ValidationMessages } from '../messages';
  * - Automatically trimmed and lowercased
  */
 export const usernameSchema = z
-  .string({ required_error: ValidationMessages.USERNAME_REQUIRED })
+  .string({ error: ValidationMessages.USERNAME_REQUIRED })
   .trim()
   .min(3, ValidationMessages.USERNAME_TOO_SHORT)
   .max(20, ValidationMessages.USERNAME_TOO_LONG)
