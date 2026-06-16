@@ -51,20 +51,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        run: pnpm --filter @repo/database db:generate
-
-      - name: Build all packages
-        run: pnpm build
-        env:
-          NEXTAUTH_SECRET: build-secret
-          NEXTAUTH_URL: http://localhost:3000
-          DATABASE_URL: postgresql://localhost:5432/build_db
-          RESEND_API_KEY: re_dummy_key_for_build
-          NODE_ENV: production
-
       # Creates a "Version Packages" PR when changesets are pending.
       # When that PR is merged, this step tags the new version and creates a GitHub Release.
+      # No build step needed — CI gates the build before merge; Vercel handles deployment.
       - name: Create Release Pull Request or publish release tags
         id: changesets
         uses: changesets/action@v1

@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 4000",
-    "build": "pnpm --filter @repo/database db:migrate:deploy && pnpm --filter @repo/database db:generate && next build",
+    "build": "pnpm --filter @repo/database db:generate && next build",
     "build:docker": "pnpm --filter @repo/database db:generate && next build",
     "start": "next start",
     "test": "vitest run",
