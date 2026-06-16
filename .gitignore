@@ -56,6 +56,9 @@ Thumbs.db
 # Turbo
 .turbo
 
+# Prisma generated client (regenerated via `pnpm --filter @repo/database db:generate`)
+packages/database/src/generated/
+
 # Docker
 docker-compose.override.yml
 

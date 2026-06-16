@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-06-16
+
+> **Post-1.0 major upgrades (Milestone 7).** BrumKit v2.0.0 upgrades the core stack to
+> Next.js 16, TypeScript 6, Prisma 7, and Zod 4, with migration guides for downstream adopters.
+> All linked `@repo/*` packages and the `web` app are bumped to **2.0.0**.
+
+### Highlights (M7)
+
+- **Next.js 16** — App Router on Next.js 16.2.x with updated client-boundary requirements for shared UI modules
+- **Prisma 7** — Driver adapter architecture (`@prisma/adapter-pg`), generated client at `packages/database/src/generated/prisma`, and `@repo/database/enums` export for validation-only code
+- **Zod 4** — Updated error handling (`error.issues`), enum APIs (`z.enum()`), and schema option syntax across validation and server actions
+- **TypeScript 6** — `Bundler` module resolution in shared presets; deprecated `baseUrl` removed from package tsconfigs
+- **Ecosystem majors** — `@casl/ability` 7, `lucide-react` 1, `sonner` 2, `resend` 6
+- **Migration guides** — Nine step-by-step upgrade docs under `docs/development/upgrade-*.md`
+
+### Changed
+
+- Next.js 15.5.x → 16.2.x
+- TypeScript 5.9.x → 6.0.x
+- Prisma 6.19.x → 7.8.x (schema generator, `prisma.config.ts`, lazy client singleton)
+- Zod 3.23.x → 4.4.x
+- `@casl/ability` 6.7.x → 7.0.x
+- `lucide-react` 0.469.x → 1.18.x
+- `sonner` 1.7.x → 2.0.x
+- `resend` 4.0.x → 6.12.x
+- `@prisma/client` imports replaced with `@repo/database` across auth and web packages
+- CI: `DATABASE_URL` env for build/type-check jobs; changeset check skipped on `changeset-release/*` branches
+
+### Breaking Changes
+
+Upgrading from v1.0.0 requires reviewing the migration guides. Key areas:
+
+- **Prisma 7** — New client output path and driver adapter setup; enum imports change for validation-only code
+- **Zod 4** — API changes for errors, enums, and custom error messages
+- **Next.js 16** — `'use client'` required on shared form and toast UI modules
+
+### Migration Guide
+
+```bash
+git pull origin main
+pnpm install
+pnpm --filter @repo/database db:generate
+pnpm build
+pnpm test
+```
+
+See `docs/development/upgrade-*.md` for per-package migration notes before merging into an existing fork.
+
+### Known Issues / Deferred
+
+- **next-auth v5 stable** — Still beta-only on npm; remains on `5.0.0-beta.25` until stable ships. See `docs/development/upgrade-nextauth-v5-stable.md`.
+- **README screenshots**: Section exists; full auth-flow and dashboard screenshots still deferred.
+- **OAuth providers** (Google, GitHub): Not included in OSS edition.
+
+### Contributors
+
+- [@pukhrajp](https://github.com/pukhrajp) — Milestone 7 upgrades
+- [@buildinclicks](https://github.com/buildinclicks) — BuildInClicks Team
+
 ## [1.0.0] - 2026-06-12
 
 > **First stable open-source release.** BrumKit v1.0.0 is a production-ready Next.js 15 starter kit
@@ -65,9 +124,9 @@ pnpm build
 
 ### Known Issues / Deferred
 
-- **README screenshots**: Section exists; full auth-flow and dashboard screenshots deferred to v1.0.1.
-- **Next.js 15 → 16 upgrade**: Deferred to post-1.0 major upgrade track (M7).
-- **Prisma 6 → 7 upgrade**: Deferred; major architectural changes require a dedicated migration.
+- **README screenshots**: Section exists; full auth-flow and dashboard screenshots deferred to a future patch.
+- **Next.js 15 → 16 upgrade**: Shipped in [2.0.0](#200---2026-06-16).
+- **Prisma 6 → 7 upgrade**: Shipped in [2.0.0](#200---2026-06-16).
 - **OAuth providers** (Google, GitHub): Not included in OSS edition.
 
 ### Contributors

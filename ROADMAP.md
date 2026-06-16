@@ -1,16 +1,16 @@
 # BrumKit OSS Roadmap
 
-**Current version:** 0.1.0  
-**Target stable release:** 1.0.0  
+**Current version:** 2.0.0  
+**Latest stable release:** [v2.0.0](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.0)  
 **Last updated:** June 2026
 
-This document tracks progress toward the first stable open-source release and outlines what comes after v1.0.0. For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+This document tracks milestone progress for BrumKit OSS and outlines what comes next. For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
 ## Release status
 
-BrumKit OSS is actively moving from the **0.1.0 foundation release** to a production-ready **1.0.0 stable release**. The work is organized into milestones; most pre-release milestones are complete or in final review.
+BrumKit OSS reached **v1.0.0** (first stable release) in June 2026 and **v2.0.0** (Milestone 7 major upgrades) shortly after. The pre-1.0 milestone track (M1–M6) and the post-1.0 upgrade track (M7) are complete.
 
 | Milestone                     | Focus                                                          | Status      |
 | ----------------------------- | -------------------------------------------------------------- | ----------- |
@@ -19,72 +19,57 @@ BrumKit OSS is actively moving from the **0.1.0 foundation release** to a produc
 | M3 — Docker & deployment      | Production Dockerfile, full-stack compose, CI smoke test       | ✅ Complete |
 | M4 — Quality & coverage       | 80%+ coverage, middleware/hook/API tests, CI coverage gate     | ✅ Complete |
 | M5 — Release engineering      | Changesets, release workflow, Dependabot, CONTRIBUTING refresh | ✅ Complete |
-| M6 — v1.0.0 cut               | Version bump, release notes, GitHub Release                    | 🔄 Next     |
-| M7 — Post-1.0 major upgrades  | Next.js 16, Prisma 7 (deferred until after 1.0.0)              | ⏳ Deferred |
+| M6 — v1.0.0 cut               | Version bump, release notes, GitHub Release                    | ✅ Complete |
+| M7 — Post-1.0 major upgrades  | Next.js 16, Prisma 7, Zod 4, TypeScript 6, ecosystem majors    | ✅ Complete |
 
 ---
 
-## Recently shipped (0.1.x → pre-1.0.0)
+## Recently shipped (v2.0.0 — M7)
 
-### Quality & testing (M4)
+### Major stack upgrades
 
-- Expanded test coverage across `@repo/ui`, `@repo/utils`, `@repo/validation`, and `apps/web`
-- Middleware route-protection tests for auth and admin access
-- Hook tests (`use-auth`, `use-user`, `use-server-action-form`)
-- API route tests for registration and profile endpoints
-- Removed skipped tests; CI enforces 80% coverage threshold
-- Expanded Vitest coverage scope to include `app/actions/**` and `app/api/**`
+- **Next.js 16.2.x** — App Router, Turbopack build; client boundaries on shared UI modules
+- **Prisma 7.8.x** — Driver adapter architecture, generated client at `packages/database/src/generated/prisma`
+- **Zod 4.4.x** — Updated error handling, enum APIs, and schema options
+- **TypeScript 6.0.x** — `Bundler` module resolution in shared presets
+- **@casl/ability 7**, **lucide-react 1**, **sonner 2**, **resend 6**
 
-### Docker & deployment (M3)
+### Migration guides
 
-- Multi-stage production `Dockerfile` for `apps/web`
-- `docker-compose.full.yml` for self-hosted full-stack deployment
-- Docker build validation in CI
-- [Self-hosting with Docker](docs/deployment/self-hosting-docker.md) guide
+Nine step-by-step upgrade docs under [`docs/development/`](docs/development/):
 
-### Release engineering (M5)
+- [`upgrade-next-15-to-16.md`](docs/development/upgrade-next-15-to-16.md)
+- [`upgrade-prisma-6-to-7.md`](docs/development/upgrade-prisma-6-to-7.md)
+- [`upgrade-zod-3-to-4.md`](docs/development/upgrade-zod-3-to-4.md)
+- [`upgrade-typescript-5-to-6.md`](docs/development/upgrade-typescript-5-to-6.md)
+- Plus guides for CASL, lucide-react, sonner, resend, and next-auth stable (deferred)
 
-- [Changesets](https://github.com/changesets/changesets) for linked monorepo versioning
-- Automated [release workflow](.github/workflows/release.yml) (Version Packages PR → tag → GitHub Release)
-- Dependabot weekly dependency updates
-- Dependency review action blocking high/critical vulnerabilities on PRs
-- Updated [CONTRIBUTING.md](CONTRIBUTING.md) with changeset workflow and Codecov setup
-- Improved PR template with BrumKit Contribution Standards checklist
+### Deferred from M7
 
-### Developer experience
-
-- [Installation & setup guide](docs/guide/v1.0.1-pre-release/installation-and-setup.md) (manual and Docker workflows)
-- Corrected local dev port (**4000**) and env file conventions (`.env.development`)
-- Root `docker-compose.yml` for Postgres, Redis, and Mailhog infrastructure
+- **next-auth v5 stable** — Still beta-only on npm; remains on `5.0.0-beta.25` until stable ships
 
 ---
 
-## v1.0.0 — first stable release (M6)
+## v1.0.0 — first stable release (M6) ✅
 
-The v1.0.0 release is a **stability declaration**, not a breaking API change. When M6 ships:
+The v1.0.0 release was a **stability declaration** for the 0.1.x foundation:
 
-- All packages bump from `0.1.x` → `1.0.0` via changesets
-- `CHANGELOG.md` and GitHub Release published automatically
-- Git tag `v1.0.0` created on merge of the Version Packages PR
-- Cursor rules and public docs updated to reflect the stable version
-
-**Remaining before cut:**
-
-- [ ] Final clean-clone verification checklist (see M6 acceptance criteria)
-- [ ] README screenshots for login, dashboard, and profile pages
-- [ ] Major changeset and Version Packages PR merge
+- All linked packages bumped from `0.1.x` → `1.0.0` via changesets
+- Git tag `v1.0.0` and [GitHub Release](https://github.com/buildinclicks/brumkit/releases/tag/v1.0.0) published
+- Docker support, 80%+ test coverage, and full OSS governance shipped
 
 ---
 
-## After v1.0.0
+## After v2.0.0
 
 ### Planned (maintainer track)
 
-| Item                      | Description                                        | Target               |
-| ------------------------- | -------------------------------------------------- | -------------------- |
-| Major dependency upgrades | Next.js 16, Prisma 7 — separate migration branches | Post-1.0             |
-| E2E tests                 | Playwright coverage for critical auth flows        | Community / post-1.0 |
-| README screenshots        | Login, dashboard, profile demo images              | Before or with 1.0.0 |
+| Item                    | Description                                       | Target         |
+| ----------------------- | ------------------------------------------------- | -------------- |
+| next-auth v5 stable     | Bump when non-beta release ships on npm           | When available |
+| E2E tests               | Playwright coverage for critical auth flows       | Post-2.0       |
+| README screenshots      | Login, dashboard, profile demo images             | Post-2.0       |
+| Release workflow polish | Canonical tag creation for private packages in CI | Post-2.0       |
 
 ### Community-driven (welcome contributions)
 
@@ -111,6 +96,7 @@ BrumKit OSS (Lite) ships auth, RBAC, profiles, notifications, Docker, and full t
 - **Feature ideas:** [GitHub Discussions](https://github.com/buildinclicks/brumkit/discussions)
 - **Releases:** [GitHub Releases](https://github.com/buildinclicks/brumkit/releases)
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Release notes:** [RELEASE_NOTES.md](RELEASE_NOTES.md)
 
 ---
 
