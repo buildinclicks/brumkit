@@ -42,7 +42,7 @@
     "@repo/config-vitest": "workspace:*",
     "@types/node": "catalog:",
     "bcryptjs": "^3.0.3",
-    "prisma": "^7.8.0",
+    "prisma": "^6.19.2",
     "tsx": "^4.22.4",
     "typescript": "catalog:",
     "vitest": "catalog:"
