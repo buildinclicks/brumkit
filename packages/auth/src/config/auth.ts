@@ -30,28 +30,32 @@ const config = {
      * immediately on the next page load rather than at JWT expiry.
      */
     async session({ session, token }) {
-      const base = await authConfig.callbacks!.session!({ session, token });
+      if (session?.user && token) {
+        session.user.id = (token.id as string) ?? '';
+        session.user.role = (token.role as UserRole) ?? 'USER';
+        session.user.username = (token.username as string | null) ?? null;
+      }
 
-      if (base.user?.id) {
+      if (session.user?.id) {
         try {
           const user = await prisma.user.findUnique({
-            where: { id: base.user.id },
+            where: { id: session.user.id },
             select: { isDeleted: true, role: true, username: true },
           });
           // Invalidate sessions for soft-deleted users
           if (!user || user.isDeleted) {
-            return { expires: base.expires } as typeof base;
+            return { expires: session.expires };
           }
           // Sync role/username in case they changed since token was issued
-          if (user.role !== base.user.role) {
-            base.user.role = user.role as UserRole;
+          if (user.role !== session.user.role) {
+            session.user.role = user.role as UserRole;
           }
         } catch {
           // Fail-open: if DB is unavailable, allow existing session to continue
         }
       }
 
-      return base;
+      return session;
     },
   },
   events: {
