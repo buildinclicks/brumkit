@@ -5,7 +5,10 @@ import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import { providers } from './providers';
 
+import type { UserRole } from '@repo/database';
 import type { NextAuthConfig } from 'next-auth';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 const config = {
   ...authConfig,
@@ -18,19 +21,55 @@ const config = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers,
-  events: {
-    async createUser({ user }) {
-      console.log('✅ User created:', user.email);
-    },
-    async signIn({ user, isNewUser }) {
-      console.log('✅ User signed in:', user.email, isNewUser ? '(new)' : '');
-    },
-    async signOut(params) {
-      const token = 'token' in params ? params.token : null;
-      console.log('👋 User signed out:', token?.email);
+  callbacks: {
+    ...authConfig.callbacks,
+    /**
+     * Override the base session callback to add a lightweight deleted-user check.
+     * Because we use JWT strategy, DB sessions cannot be revoked server-side; this
+     * DB re-check on every auth() call ensures soft-deleted accounts are rejected
+     * immediately on the next page load rather than at JWT expiry.
+     */
+    async session({ session, token }) {
+      const base = await authConfig.callbacks!.session!({ session, token });
+
+      if (base.user?.id) {
+        try {
+          const user = await prisma.user.findUnique({
+            where: { id: base.user.id },
+            select: { isDeleted: true, role: true, username: true },
+          });
+          // Invalidate sessions for soft-deleted users
+          if (!user || user.isDeleted) {
+            return { expires: base.expires } as typeof base;
+          }
+          // Sync role/username in case they changed since token was issued
+          if (user.role !== base.user.role) {
+            base.user.role = user.role as UserRole;
+          }
+        } catch {
+          // Fail-open: if DB is unavailable, allow existing session to continue
+        }
+      }
+
+      return base;
     },
   },
-  debug: process.env.NODE_ENV === 'development',
+  events: {
+    async createUser({ user }) {
+      if (isDev) console.log('✅ User created:', user.email);
+    },
+    async signIn({ user, isNewUser }) {
+      if (isDev)
+        console.log('✅ User signed in:', user.email, isNewUser ? '(new)' : '');
+    },
+    async signOut(params) {
+      if (isDev) {
+        const token = 'token' in params ? params.token : null;
+        console.log('👋 User signed out:', token?.email);
+      }
+    },
+  },
+  debug: isDev,
 } satisfies NextAuthConfig;
 
 const nextAuth = NextAuth(config);

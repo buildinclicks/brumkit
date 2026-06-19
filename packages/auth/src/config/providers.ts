@@ -34,6 +34,11 @@ export const providers: NextAuthConfig['providers'] = [
           return null;
         }
 
+        // Reject soft-deleted accounts — they cannot sign in regardless of password
+        if (user.isDeleted || user.deletedAt) {
+          return null;
+        }
+
         // Verify password
         const isValid = await verifyPassword(password, user.password);
 

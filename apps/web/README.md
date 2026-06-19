@@ -1,96 +1,70 @@
-# Web - Main Next.js Application
+# Web — Next.js 16 Application
 
-The main full-stack application for React Masters starter kit.
+The main full-stack application for BrumKit OSS.
 
 ## Features
 
-- ✅ **Authentication**
-  - Email/Password login
-  - OAuth (Google, GitHub)
-  - User registration
-  - Protected routes with middleware
-
-- ✅ **Dashboard**
-  - User overview and stats
-  - Role-based permissions display
-  - Account management
-
-- ✅ **Profile Management**
-  - Update personal information
-  - Username, bio, and avatar
-  - Profile validation
-  - Change password
-  - Change email (with verification)
-  - Delete account (with 30-day grace period)
-
-## Documentation
-
-- 📖 [Scheduled Account Deletion](./docs/SCHEDULED_DELETION.md) - Automated cleanup cron job
-- 📧 Email notifications and templates
-- 🔐 Security and authentication flows
+- Authentication: email/password login, registration, password reset, email verification
+- Dashboard: user overview, role-based permissions display, account management
+- Profile Management: name/username/bio, change password, change email, delete account
+- Notifications: in-app notification list with read/unread tracking
+- Rate limiting on all sensitive actions via Redis
 
 ## Tech Stack
 
-- Next.js 15 (App Router)
+- Next.js 16 (App Router)
 - React 19
-- TypeScript (strict mode)
+- TypeScript 6 (strict mode)
 - Tailwind CSS v4
 - Auth.js v5
-- Prisma ORM
+- Prisma 7 ORM
 - React Hook Form + Zod
 
 ## Getting Started
 
 ### Prerequisites
 
-1. PostgreSQL database running (via Docker Compose)
-2. All workspace packages installed
+1. Node.js >= 20.19.0 and pnpm >= 10.0.0
+2. Docker (for PostgreSQL + Redis + Mailhog)
 
 ### Environment Setup
 
-1. Copy the environment template:
+BrumKit uses **three separate env file locations**. Copy the root example to all three:
 
-   ```bash
-   cp env.template .env.local
-   ```
+```bash
+# 1. Root — used by Docker Compose for infrastructure vars (POSTGRES_*, REDIS_*, MAILHOG_*)
+cp ../../.env.development.example ../../.env.development
 
-2. Update `.env.local` with your values:
+# 2. Prisma CLI — used when running migrations, seed, studio from packages/database
+cp ../../.env.development.example ../../packages/database/.env
 
-   ```env
-   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/react_masters
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your-secret-key-here
-   ```
+# 3. Next.js — REQUIRED; Next.js only reads env files from the app directory
+cp ../../.env.development.example .env.local
+```
 
-3. (Optional) Add OAuth credentials:
-   ```env
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   GITHUB_CLIENT_ID=your-github-client-id
-   GITHUB_CLIENT_SECRET=your-github-client-secret
-   ```
+Key values to update in `.env.local`:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/broom_kit
+NEXTAUTH_URL=http://localhost:4000
+NEXTAUTH_SECRET=replace-me-with-openssl-rand-base64-32
+REDIS_URL=redis://:redis_secret@localhost:6379
+FROM_EMAIL=noreply@brumkit.local
+```
+
+See the root `.env.development.example` for the full variable list.
 
 ### Running the App
 
 ```bash
-# From the monorepo root
-pnpm dev:web
-
-# Or from this directory
+# From the monorepo root — starts all packages
 pnpm dev
+
+# Or for this package only
+pnpm dev:web
 ```
 
-The app will be available at http://localhost:3000
-
-### Building for Production
-
-```bash
-# Build the application
-pnpm build
-
-# Start production server
-pnpm start
-```
+The app runs at http://localhost:4000.
 
 ## Project Structure
 
@@ -98,237 +72,98 @@ pnpm start
 apps/web/
 ├── app/
 │   ├── (auth)/                 # Authentication pages (public)
-│   │   ├── login/             # Login page
-│   │   ├── register/          # Registration page
-│   │   ├── forgot-password/   # Password reset request
-│   │   ├── reset-password/    # Password reset with token
+│   │   ├── login/              # Login page
+│   │   ├── register/           # Registration page
+│   │   ├── forgot-password/    # Password reset request
+│   │   ├── reset-password/     # Password reset with token
+│   │   ├── verify-email/       # Email verification landing
 │   │   ├── verify-email-change/ # Email change verification
-│   │   └── layout.tsx         # Auth layout
-│   ├── (dashboard)/           # Dashboard pages (protected)
-│   │   ├── dashboard/         # Main dashboard
-│   │   ├── profile/           # Profile management
-│   │   └── layout.tsx         # Dashboard layout
-│   ├── actions/               # Server actions
-│   │   ├── auth.ts           # Auth actions
-│   │   ├── email-change.ts   # Email change flow
+│   │   └── layout.tsx          # Auth layout
+│   ├── (dashboard)/            # Dashboard pages (protected)
+│   │   ├── dashboard/          # Main dashboard
+│   │   ├── notifications/      # Notification list
+│   │   ├── profile/            # Profile management
+│   │   └── layout.tsx          # Dashboard layout (auth enforced here)
+│   ├── actions/                # Server actions
+│   │   ├── auth.ts             # Auth actions (register, login, reset)
+│   │   ├── email-change.ts     # Email change flow
 │   │   ├── account-deletion.ts # Account deletion
-│   │   └── user.ts           # User profile updates
+│   │   ├── notification.ts     # Notification actions
+│   │   └── user.ts             # User profile updates
 │   ├── api/
 │   │   ├── auth/
-│   │   │   └── [...nextauth]/ # Auth.js API routes
+│   │   │   ├── [...nextauth]/  # Auth.js API routes
+│   │   │   └── register/       # REST registration endpoint
 │   │   ├── cron/
 │   │   │   └── cleanup-deleted-accounts/ # Scheduled deletion
 │   │   └── user/
-│   │       └── profile/       # Profile update endpoint
-│   ├── globals.css            # Global styles
-│   ├── layout.tsx             # Root layout
-│   ├── page.tsx               # Home page
-│   └── providers.tsx          # Client providers
-├── docs/                      # Documentation
+│   │       └── profile/        # Profile update endpoint
+│   ├── global.css              # Global styles
+│   ├── layout.tsx              # Root layout
+│   ├── page.tsx                # Home page
+│   └── providers.tsx           # Client providers
+├── components/                 # Shared UI components
+├── docs/                       # Documentation
 │   └── SCHEDULED_DELETION.md  # Cron job documentation
 ├── lib/
-│   ├── services/              # Business logic services
-│   │   └── account-cleanup.service.ts
-│   └── hooks/                 # Custom React hooks
-├── middleware.ts              # Route protection
-├── vercel.json                # Vercel cron configuration
-├── package.json
+│   ├── hooks/                  # Custom React hooks
+│   ├── services/               # Business logic services
+│   └── utils/                  # Utility functions
+├── messages/
+│   └── en.json                 # i18n message keys
+├── proxy.ts                    # Next.js 16 route guard (optimistic redirects)
+├── vercel.json                 # Vercel cron configuration
 ├── next.config.js
-├── tailwind.config.ts
 └── tsconfig.json
 ```
 
-## Features in Detail
+### Route Protection Architecture
 
-### Authentication Flow
+BrumKit uses **defense-in-depth** for auth:
 
-1. **Registration**
-   - User fills registration form
-   - Password is validated and hashed
-   - User is created in database
-   - Redirected to login
+1. `proxy.ts` — lightweight optimistic redirects (replaces deprecated `middleware.ts` per Next.js 16)
+2. `(dashboard)/layout.tsx` — server-side `auth()` + `redirect('/login')` (primary enforcement)
+3. Server actions — each action calls `auth()` or `getCurrentUser()` independently
 
-2. **Login**
-   - Email/password authentication
-   - OAuth providers (Google, GitHub)
-   - JWT session created
-   - Redirected to dashboard
+The proxy is **not** the security boundary. It provides UX redirects before page render; layouts and server actions are the real gate.
 
-3. **Route Protection**
-   - Middleware checks authentication
-   - Public routes: `/`, `/login`, `/register`
-   - Protected routes: `/dashboard`, `/profile`
-   - Automatic redirects based on auth state
+## Security Features
 
-### Dashboard
-
-- Displays user account details
-- Shows role-based permissions
-- Quick stats placeholder
-- Permission indicators
-
-### Profile Management
-
-- Update name, username, bio
-- Profile image URL
-- Server-side validation
-- Duplicate username check
-- Real-time form validation
-
-### Security Features
-
-- **Password Management**
-  - Change password with current password verification
-  - Password reset via email token
-  - Password strength validation
-  - Email notifications on password changes
-
-- **Email Management**
-  - Change email with verification
-  - Notifications to both old and new email
-  - Token-based verification system
-
-- **Account Deletion**
-  - Soft delete with 30-day grace period
-  - Password confirmation required
-  - Email notifications
-  - Automated permanent deletion after grace period
-  - Hybrid data retention (PII deleted, anonymized metrics kept)
-
-- **Rate Limiting**
-  - Redis-based rate limiting on sensitive actions
-  - Configurable limits per action type
-  - Protection against brute force attacks
+- **Rate Limiting**: Redis-based on register, login, password reset, email change, account deletion
+- **Email enumeration prevention**: password reset returns success even for unknown addresses
+- **Soft delete with grace period**: 30-day recovery window before permanent deletion
+- **Cron protection**: `CRON_SECRET` bearer token (required in production)
 
 ## Package Integration
 
-This app uses the following workspace packages:
-
-- `@repo/auth` - Authentication & authorization
-- `@repo/database` - Prisma client
-- `@repo/email` - Email templates and sending
-- `@repo/rate-limit` - Redis rate limiting
-- `@repo/ui` - shadcn/ui components
-- `@repo/validation` - Zod schemas
-- `@repo/types` - Shared TypeScript types
-- `@repo/utils` - Utility functions
-- `@repo/config-*` - Shared configs
-
-## API Routes
-
-### Authentication
-
-#### `POST /api/auth/register`
-
-Register a new user account.
-
-**Body:**
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "Password123!",
-  "confirmPassword": "Password123!"
-}
-```
-
-### User Management
-
-#### `PATCH /api/user/profile`
-
-Update user profile (requires authentication).
-
-**Body:**
-
-```json
-{
-  "name": "John Doe",
-  "username": "johndoe",
-  "bio": "Software developer",
-  "image": "https://example.com/avatar.jpg"
-}
-```
-
-### Cron Jobs
-
-#### `GET /api/cron/cleanup-deleted-accounts`
-
-Automated daily job to permanently delete accounts after 30-day grace period.
-
-**Authentication:** Bearer token via `CRON_SECRET` environment variable
-
-**Called by:** Vercel Cron (daily at 2 AM UTC)
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "deletedCount": 2,
-  "errors": [],
-  "message": "Successfully processed 2 account deletions"
-}
-```
-
-See [Scheduled Deletion Documentation](./docs/SCHEDULED_DELETION.md) for details.
-
-## Development
-
-### Type Checking
-
-```bash
-pnpm type-check
-```
-
-### Linting
-
-```bash
-pnpm lint
-```
+| Package            | Purpose                                                 |
+| ------------------ | ------------------------------------------------------- |
+| `@repo/auth`       | Auth.js v5 instance, CASL permissions, proxy helper     |
+| `@repo/database`   | Prisma 7 client                                         |
+| `@repo/email`      | Email templates and sending (Mailhog dev / Resend prod) |
+| `@repo/rate-limit` | Redis rate limiting                                     |
+| `@repo/ui`         | shadcn/ui components                                    |
+| `@repo/validation` | Zod schemas                                             |
+| `@repo/types`      | Shared TypeScript types                                 |
+| `@repo/utils`      | Utility functions                                       |
 
 ## Troubleshooting
 
-### "Module not found" errors
-
-Make sure all workspace packages are installed:
-
-```bash
-cd ../../
-pnpm install
-```
-
 ### Database connection errors
 
-1. Ensure PostgreSQL is running:
+1. Start infrastructure: `docker compose --env-file .env.development up -d`
+2. Confirm `DATABASE_URL` in `.env.local` uses port `5433` (Docker maps to this port)
+3. Run migrations: `pnpm --filter @repo/database db:migrate`
 
-   ```bash
-   cd docker
-   docker-compose up -d postgres
-   ```
+### Auth.js / session errors
 
-2. Check `DATABASE_URL` in `.env.local`
+1. Confirm `NEXTAUTH_SECRET` is set in **`apps/web/.env.local`** (not only in the root `.env.development`)
+2. Confirm `NEXTAUTH_URL=http://localhost:4000` (app runs on port 4000, not 3000)
 
-3. Run migrations:
-   ```bash
-   cd packages/database
-   pnpm prisma migrate dev
-   ```
+### Email not arriving
 
-### Auth.js errors
-
-1. Ensure `NEXTAUTH_SECRET` is set in `.env.local`
-2. For OAuth, ensure provider credentials are configured
-3. Check `NEXTAUTH_URL` matches your development URL
-
-## Next Steps
-
-- [ ] Add article management (create, edit, delete)
-- [ ] Implement TipTap rich text editor
-- [ ] Add social features (follows, bookmarks, reactions)
-- [ ] Implement notifications
-- [ ] Add user search and discovery
-- [ ] Create admin dashboard
+1. Start Mailhog: `docker compose --env-file .env.development up -d mailhog`
+2. Open the Mailhog UI at http://localhost:8025
 
 ## License
 

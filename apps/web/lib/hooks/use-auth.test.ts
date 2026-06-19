@@ -16,6 +16,7 @@ import {
 import type { ReactNode } from 'react';
 
 vi.mock('@/app/actions', () => ({
+  loginUser: vi.fn(),
   changePassword: vi.fn(),
   requestPasswordReset: vi.fn(),
   resetPassword: vi.fn(),
@@ -40,7 +41,9 @@ describe('useLogin', () => {
     expect(result.current.isPending).toBe(false);
   });
 
-  it('should call signIn with credentials on mutate', async () => {
+  it('should call loginUser pre-check then signIn on mutate', async () => {
+    const { loginUser } = await import('@/app/actions');
+    vi.mocked(loginUser).mockResolvedValue({ success: true, data: undefined });
     vi.mocked(signIn).mockResolvedValue({ ok: true, error: null } as any);
 
     const { result } = renderHook(() => useLogin(), { wrapper });
@@ -56,11 +59,43 @@ describe('useLogin', () => {
       }
     });
 
+    // Rate-limit pre-check fires first
+    expect(loginUser).toHaveBeenCalledWith({
+      email: 'user@example.com',
+      password: 'Password123!',
+    });
+
+    // Session creation fires only after pre-check succeeds
     expect(signIn).toHaveBeenCalledWith('credentials', {
       redirect: false,
       email: 'user@example.com',
       password: 'Password123!',
     });
+  });
+
+  it('should not call signIn when loginUser rate-limit pre-check fails', async () => {
+    const { loginUser } = await import('@/app/actions');
+    vi.mocked(loginUser).mockResolvedValue({
+      success: false,
+      error: 'Too many login attempts.',
+    });
+
+    const { result } = renderHook(() => useLogin(), { wrapper });
+
+    let threw = false;
+    await act(async () => {
+      try {
+        await result.current.mutateAsync({
+          email: 'user@example.com',
+          password: 'Password123!',
+        });
+      } catch {
+        threw = true;
+      }
+    });
+
+    expect(threw).toBe(true);
+    expect(signIn).not.toHaveBeenCalled();
   });
 
   it('should return null when unauthenticated (no data before mutation fires)', () => {

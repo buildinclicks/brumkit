@@ -2,7 +2,7 @@
 
 # 🚀 BrumKit - Open Source Edition (Lite)
 
-**Version 2.0.0** (stable) | A production-ready Next.js 16 starter kit with authentication, authorization, and essential features. See [ROADMAP.md](ROADMAP.md) for what's planned next.
+**Version 2.0.1** (stable) | A production-ready Next.js 16 starter kit with authentication, authorization, and essential features. See [ROADMAP.md](ROADMAP.md) for what's planned next.
 
 Start building your SaaS faster with our Next.js 16 + Prisma 7 + Tailwind CSS v4 starter kit.
 
@@ -36,6 +36,8 @@ Start building your SaaS faster with our Next.js 16 + Prisma 7 + Tailwind CSS v4
 - 👤 **User Profiles**: Profile management, avatar uploads, and account settings.
 - 🔔 **Notifications**: Real-time ready notification system with read/unread tracking.
 - 🚀 **Rate Limiting**: Redis-based protection for sensitive routes.
+- 🛡️ **Defense-in-depth auth**: Next.js 16 `proxy.ts` for optimistic redirects; server layouts and actions enforce sessions.
+- 🏥 **Health checks**: `/api/health` endpoint for Docker Compose, load balancers, and monitoring.
 - 🐳 **Docker-Ready**: Local infrastructure and production self-hosting via Docker.
 - 🔄 **Release automation**: Changesets versioning with GitHub Actions release pipeline.
 
@@ -100,11 +102,25 @@ BrumKit OSS is the **"Lite"** foundation, focused on the core authentication, au
 
 3. **Set up environment variables:**
 
+   BrumKit uses **three separate env file locations** — each consumer reads from its own directory:
+
    ```bash
+   # Root — Docker Compose infrastructure (POSTGRES_*, REDIS_*, MAILHOG_*)
    cp .env.development.example .env.development
-   # Also copy for the database package:
+
+   # Prisma CLI — migrations, seed, studio from packages/database
    cp .env.development.example packages/database/.env
+
+   # Next.js — REQUIRED; Next.js only reads env files from apps/web/
+   cp .env.development.example apps/web/.env.local
    ```
+
+   > **Important:** The root `.env.development` is NOT loaded automatically by Next.js.
+   > You must also copy it to `apps/web/.env.local` for the application to access
+   > `DATABASE_URL`, `NEXTAUTH_*`, `REDIS_URL`, and other runtime variables.
+   >
+   > When you update a secret or URL, update **all three copies** (or use a symlink:
+   > `ln -sf ../../.env.development apps/web/.env.local`).
 
 4. **Start infrastructure (Docker):**
 
@@ -120,6 +136,7 @@ BrumKit OSS is the **"Lite"** foundation, focused on the core authentication, au
    ```
 
 6. **Start development server:**
+
    ```bash
    pnpm dev
    ```
@@ -135,30 +152,46 @@ brumkit/
 ├── apps/
 │   └── web/                 # Next.js 16 application
 ├── packages/
-│   ├── auth/                # Auth.js integration
-│   ├── database/            # Prisma schema & client
+│   ├── auth/                # Auth.js v5 + CASL
+│   ├── database/            # Prisma 7 schema & client
 │   ├── email/               # Templates & sending
 │   ├── rate-limit/          # Redis rate limiting
 │   ├── ui/                  # Shared Shadcn components
 │   ├── validation/          # Zod schemas
 │   ├── types/               # Shared TS types
 │   └── utils/               # Shared utilities
-└── docker/                  # Local infrastructure config
+├── docker-compose.yml        # Dev infrastructure (PostgreSQL, Redis, Mailhog)
+├── docker-compose.full.yml   # Full production stack
+├── .env.development.example  # Template for local development
+└── .env.production.example   # Template for production
 ```
 
 ---
 
 ## 🔑 Environment Variables
 
-The root `.env.development` file manages both the web app and the Docker infrastructure.
+BrumKit env variables are loaded from **three locations** depending on the consumer:
 
-| Variable              | Description                        | Default                 |
-| --------------------- | ---------------------------------- | ----------------------- |
-| `NEXT_PUBLIC_APP_URL` | The URL of your application        | `http://localhost:4000` |
-| `DATABASE_URL`        | Connection string for Prisma       | `postgresql://...`      |
-| `NEXTAUTH_SECRET`     | Secret for session encryption      | `replace-me`            |
-| `REDIS_URL`           | Redis connection for rate limiting | `redis://...`           |
-| `USE_MAILHOG`         | Enables local mail catching        | `true`                  |
+| Location                  | Used by                            | Copy command                                         |
+| ------------------------- | ---------------------------------- | ---------------------------------------------------- |
+| `.env.development` (root) | Docker Compose                     | `cp .env.development.example .env.development`       |
+| `packages/database/.env`  | Prisma CLI (migrate, seed, studio) | `cp .env.development.example packages/database/.env` |
+| `apps/web/.env.local`     | Next.js app runtime                | `cp .env.development.example apps/web/.env.local`    |
+
+Key variables — see `.env.development.example` for the full list with defaults:
+
+| Variable                            |       Required in prod       | Description                                                      |
+| ----------------------------------- | :--------------------------: | ---------------------------------------------------------------- |
+| `DATABASE_URL`                      |             yes              | PostgreSQL connection string                                     |
+| `NEXTAUTH_URL`                      |             yes              | Application base URL for Auth.js                                 |
+| `NEXTAUTH_SECRET`                   |             yes              | Session encryption secret (`openssl rand -base64 32`)            |
+| `NEXT_PUBLIC_APP_URL`               |             yes              | Public-facing app URL (also needed in `.env.production.example`) |
+| `REDIS_URL`                         | optional (prod uses Upstash) | Redis for rate limiting                                          |
+| `UPSTASH_REDIS_REST_URL` / `_TOKEN` |          yes (prod)          | Upstash Redis for production                                     |
+| `RESEND_API_KEY`                    |          yes (prod)          | Email sending in production                                      |
+| `FROM_EMAIL`                        |             yes              | Sender address for transactional email                           |
+| `CRON_SECRET`                       |          yes (prod)          | Bearer token for cron endpoint                                   |
+| `ADMIN_EMAIL`                       |             yes              | Recipient for admin notifications                                |
 
 ---
 
@@ -222,8 +255,9 @@ Clone and run BrumKit in under 5 minutes:
 git clone https://github.com/buildinclicks/brumkit.git
 cd brumkit
 pnpm install
-cp .env.development.example .env.development
-cp .env.development.example packages/database/.env
+cp .env.development.example .env.development           # Docker Compose infra
+cp .env.development.example packages/database/.env     # Prisma CLI
+cp .env.development.example apps/web/.env.local        # Next.js app runtime
 docker compose --env-file .env.development up -d
 pnpm --filter @repo/database db:migrate
 pnpm --filter @repo/database db:seed
@@ -236,15 +270,15 @@ Open [http://localhost:4000](http://localhost:4000) in your browser.
 
 ## 📖 Documentation
 
-| Guide                                                                           | Description                              |
-| ------------------------------------------------------------------------------- | ---------------------------------------- |
-| [Installation & setup](docs/guide/v1.0.1-pre-release/installation-and-setup.md) | Full manual and Docker setup walkthrough |
-| [Upgrade guides](docs/development/)                                             | v1.0.0 → v2.0.0 migration per package    |
-| [Self-hosting with Docker](docs/deployment/self-hosting-docker.md)              | Production Docker deployment             |
-| [Vercel deployment](docs/deployment/vercel-deployment-guide.md)                 | Managed hosting on Vercel                |
-| [ROADMAP.md](ROADMAP.md)                                                        | Milestone progress and what's next       |
-| [CHANGELOG.md](CHANGELOG.md)                                                    | Version history                          |
-| [RELEASE_NOTES.md](RELEASE_NOTES.md)                                            | Detailed release notes (v1.0.0, v2.0.0)  |
+| Guide                                                                           | Description                               |
+| ------------------------------------------------------------------------------- | ----------------------------------------- |
+| [Installation & setup](docs/guide/v1.0.1-pre-release/installation-and-setup.md) | Full manual and Docker setup walkthrough  |
+| [Self-hosting with Docker](docs/deployment/self-hosting-docker.md)              | Production Docker deployment              |
+| [Vercel deployment](docs/deployment/vercel-deployment-guide.md)                 | Managed hosting on Vercel                 |
+| [@repo/auth README](packages/auth/README.md)                                    | Auth.js setup, proxy.ts, CASL permissions |
+| [ROADMAP.md](ROADMAP.md)                                                        | Milestone progress and what's next        |
+| [CHANGELOG.md](CHANGELOG.md)                                                    | Version history and migration notes       |
+| [RELEASE_NOTES.md](RELEASE_NOTES.md)                                            | Detailed release notes (v1.0.0, v2.0.0)   |
 
 ---
 

@@ -16,6 +16,8 @@ import {
   resetPasswordRequestSchema,
   resetPasswordSchema,
   type ResetPasswordInput,
+  changePasswordSchema,
+  verifyEmailSchema,
   ValidationMessages,
 } from '@repo/validation';
 import { headers } from 'next/headers';
@@ -268,9 +270,16 @@ export async function loginUser(data: LoginInput): Promise<ActionResult> {
 export async function changePassword(data: {
   currentPassword: string;
   newPassword: string;
+  confirmPassword?: string;
 }): Promise<ActionResult> {
   try {
-    const { currentPassword, newPassword } = data;
+    // Server-side schema validation — catches format/strength issues before DB query
+    const validated = changePasswordSchema.parse({
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+      confirmPassword: data.confirmPassword ?? data.newPassword,
+    });
+    const { currentPassword, newPassword } = validated;
 
     // Get current user
     const { getCurrentUser } = await import('@repo/auth');
@@ -536,9 +545,10 @@ export async function verifyEmail(
   token: string
 ): Promise<ActionResult<{ email: string }>> {
   try {
-    // Verify token and get email
+    // Server-side schema validation — rejects empty or non-string tokens early
+    const { token: validatedToken } = verifyEmailSchema.parse({ token });
 
-    const email = await verifyMagicLinkToken(token);
+    const email = await verifyMagicLinkToken(validatedToken);
 
     if (!email) {
       return {

@@ -37,8 +37,16 @@ export {
 // Token Utilities
 export { generateMagicLinkToken, verifyMagicLinkToken } from './utils/token';
 
-// Middleware
-export { authMiddleware } from './middleware';
+// Proxy (Next.js 16+ — formerly "Middleware")
+export {
+  authProxy,
+  defaultProxyMatcher,
+  /** @deprecated Use authProxy */
+  authMiddleware,
+  /** @deprecated Use defaultProxyMatcher */
+  defaultMatcher,
+} from './proxy';
+export type { AuthProxyConfig, AuthMiddlewareConfig } from './proxy';
 
 // Types
 export type {} from './types';

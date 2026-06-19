@@ -57,7 +57,7 @@ describe('POST /api/auth/register', () => {
     expect(data.user.email).toBe('alice@example.com');
   });
 
-  it('should return 400 for duplicate email', async () => {
+  it('should return 409 for duplicate email without leaking enumeration info', async () => {
     const { db } = await import('@repo/database');
 
     vi.mocked(db.user.findUnique).mockResolvedValue({
@@ -68,8 +68,10 @@ describe('POST /api/auth/register', () => {
     const res = await POST(buildRequest(validPayload));
     const data = await res.json();
 
-    expect(res.status).toBe(400);
-    expect(data.error).toMatch(/already exists/i);
+    // 409 Conflict — generic message prevents email enumeration
+    expect(res.status).toBe(409);
+    expect(data.error).not.toMatch(/already exists/i);
+    expect(data.error).toBeDefined();
     expect(db.user.create).not.toHaveBeenCalled();
   });
 

@@ -6,7 +6,6 @@
     "NEXTAUTH_URL",
     "NEXTAUTH_SECRET",
     "FROM_EMAIL",
-    "EMAIL_FROM",
     "RESEND_API_KEY",
     "CRON_SECRET",
     "NEXT_PUBLIC_APP_URL",
@@ -15,10 +14,6 @@
     "UPSTASH_REDIS_REST_URL",
     "UPSTASH_REDIS_REST_TOKEN",
     "REDIS_URL",
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-    "GITHUB_CLIENT_ID",
-    "GITHUB_CLIENT_SECRET",
     "ADMIN_EMAIL"
   ],
   "globalDependencies": ["**/.env.*local"],

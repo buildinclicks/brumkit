@@ -167,7 +167,8 @@ jobs:
         run: pnpm --filter @repo/database db:generate
 
       - name: Run database migrations
-        run: pnpm --filter @repo/database db:push
+        # db:migrate:deploy validates and applies migration files — catches drift that db:push misses
+        run: pnpm --filter @repo/database db:migrate:deploy
 
       - name: Run tests with coverage
         run: pnpm test:coverage

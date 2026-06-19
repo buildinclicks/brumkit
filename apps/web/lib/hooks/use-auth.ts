@@ -7,7 +7,11 @@ import { queryKeys } from './query-keys';
 import type { LoginInput, ChangePasswordInput } from '@repo/validation';
 
 /**
- * Hook for user login
+ * Hook for user login.
+ *
+ * Calls the `loginUser` server action first (enforces Redis rate limits),
+ * then calls Auth.js `signIn` to create the session if the pre-check passes.
+ * This ensures rate limiting applies to the real sign-in path, not just tests.
  */
 export function useLogin() {
   const router = useRouter();
@@ -15,6 +19,19 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (credentials: LoginInput) => {
+      const { loginUser } = await import('@/app/actions');
+
+      // Step 1: rate-limit check + credential verification
+      const preCheck = await loginUser(credentials);
+      if (!preCheck.success) {
+        const error = new Error(preCheck.error) as Error & {
+          fieldErrors?: Record<string, string>;
+        };
+        error.fieldErrors = preCheck.fieldErrors;
+        throw error;
+      }
+
+      // Step 2: create Auth.js session
       const result = await signIn('credentials', {
         redirect: false,
         email: credentials.email,
@@ -28,7 +45,6 @@ export function useLogin() {
       return result;
     },
     onSuccess: () => {
-      // Invalidate user queries to refetch current user
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       router.push('/dashboard');
     },

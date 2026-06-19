@@ -2,6 +2,7 @@
 
 import { auth } from '@repo/auth';
 import { db } from '@repo/database';
+import { markNotificationAsReadSchema } from '@repo/validation';
 
 import type { ActionResult } from './auth';
 import type { Notification } from '@repo/database';
@@ -44,10 +45,13 @@ export async function markAsRead(id: string): Promise<ActionResult<void>> {
       return { success: false, error: 'Unauthorized' };
     }
 
+    // Server-side schema validation — ensures id is a valid cuid
+    const { id: validatedId } = markNotificationAsReadSchema.parse({ id });
+
     // Verify notification belongs to user
     const notification = await db.notification.findFirst({
       where: {
-        id,
+        id: validatedId,
         recipientId: session.user.id,
       },
     });
@@ -57,7 +61,7 @@ export async function markAsRead(id: string): Promise<ActionResult<void>> {
     }
 
     await db.notification.update({
-      where: { id },
+      where: { id: validatedId },
       data: { readAt: new Date() },
     });
 
