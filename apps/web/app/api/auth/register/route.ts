@@ -1,3 +1,14 @@
+/**
+ * REST registration endpoint.
+ *
+ * This route is an alternative to the `registerUser` server action. When both
+ * exist, they must behave identically in terms of security posture to avoid
+ * a weaker path. Key differences that this route still lacks vs the action:
+ *   - No Redis rate limiting (the action limits by email + IP)
+ *   - No verification email
+ * These gaps are tracked in the enterprise readiness audit. For now, the route
+ * is hardened to at minimum prevent email enumeration.
+ */
 import { hashPassword } from '@repo/auth';
 import { db } from '@repo/database';
 import { registerSchema } from '@repo/validation';
@@ -7,25 +18,23 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Validate input
     const validatedData = registerSchema.parse(body);
 
-    // Check if user already exists
     const existingUser = await db.user.findUnique({
       where: { email: validatedData.email },
     });
 
     if (existingUser) {
+      // Return a generic conflict response to prevent email enumeration.
+      // The message does NOT confirm whether the email is already registered.
       return NextResponse.json(
-        { error: 'User with this email already exists' },
-        { status: 400 }
+        { error: 'Unable to complete registration. Please try again.' },
+        { status: 409 }
       );
     }
 
-    // Hash password
     const hashedPassword = await hashPassword(validatedData.password);
 
-    // Create user
     const user = await db.user.create({
       data: {
         name: validatedData.name,
@@ -36,7 +45,6 @@ export async function POST(request: Request) {
       select: {
         id: true,
         name: true,
-        email: true,
         role: true,
         createdAt: true,
       },

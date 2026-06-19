@@ -1,22 +1,18 @@
 /**
- * Edge-compatible Auth Exports
+ * Edge-safe exports for use in Next.js proxy.ts (formerly middleware.ts).
  *
- * This module exports only edge-runtime compatible functions and configurations.
- * Use this import in middleware and edge runtime contexts.
+ * Import path: @repo/auth/edge
  *
- * @example
- * ```ts
- * // In middleware.ts
- * import { auth } from '@repo/auth/edge';
- * ```
+ * // In proxy.ts
+ * import { authProxy } from '@repo/auth/edge';
  */
-
-// Auth.js Configuration (Edge-safe)
-export { authConfig } from './config/auth.config';
 export { auth, signIn, signOut, handlers } from './config/auth.edge';
-
-// Middleware (Edge-safe)
-export { authMiddleware, defaultMatcher } from './middleware';
-
-// Types (no runtime code)
-export type {} from './types';
+export {
+  authProxy,
+  defaultProxyMatcher,
+  /** @deprecated Use authProxy */
+  authMiddleware,
+  /** @deprecated Use defaultProxyMatcher */
+  defaultMatcher,
+} from './proxy';
+export type { AuthProxyConfig, AuthMiddlewareConfig } from './proxy';

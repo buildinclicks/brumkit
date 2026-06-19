@@ -34,12 +34,25 @@ pnpm install
 
 3. Set up environment variables:
 
+   BrumKit uses **three separate env file locations** — each consumer reads from its own directory:
+
 ```bash
+# Root — Docker Compose infrastructure (POSTGRES_*, REDIS_*, MAILHOG_*)
 cp .env.development.example .env.development
-# Also copy for the database package:
+
+# Prisma CLI — migrations, seed, studio from packages/database
 cp .env.development.example packages/database/.env
-# Edit .env.development with your configuration
+
+# Next.js — REQUIRED; Next.js only reads env files from apps/web/
+cp .env.development.example apps/web/.env.local
 ```
+
+> **Important:** The root `.env.development` is **not** loaded by Next.js. Skipping the
+> `apps/web/.env.local` copy will cause the app to fail with missing `DATABASE_URL`,
+> `NEXTAUTH_*`, and `REDIS_URL` at runtime.
+>
+> When you change any value, update all three copies. A symlink is a DRY alternative:
+> `ln -sf ../../.env.development apps/web/.env.local`
 
 4. Start infrastructure (Docker):
 

@@ -1,6 +1,6 @@
 # @repo/auth
 
-Authentication and authorization package for the React Masters starter kit. Built with Auth.js v5 (NextAuth), CASL, and bcryptjs.
+Authentication and authorization package for BrumKit. Built with Auth.js v5, CASL, and bcryptjs.
 
 ## Features
 
@@ -9,7 +9,7 @@ Authentication and authorization package for the React Masters starter kit. Buil
 - 🛡️ **CASL Authorization**: Role-based and attribute-based access control (RBAC + ABAC)
 - 🔒 **Password Security**: bcryptjs hashing with strength validation
 - 🎫 **Magic Link Tokens**: Secure, time-limited authentication tokens
-- 🚪 **Route Protection**: Next.js middleware for protected routes
+- 🚪 **Route Protection**: Next.js 16 proxy for optimistic redirects; primary enforcement in Server layouts and actions
 - ✅ **Full Test Coverage**: Comprehensive unit tests for all utilities
 
 ## Installation
@@ -48,69 +48,75 @@ await signOut();
 
 #### Environment Variables
 
-Create a `.env` file in your Next.js app:
+Create `apps/web/.env.local` (copied from the root `.env.development.example`):
 
 ```env
 # Auth.js
-NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:4000
 NEXTAUTH_SECRET=your-secret-key-here
 
-# Email (Magic Link)
-EMAIL_SERVER=smtp://user:pass@smtp.provider.com:587
-EMAIL_FROM=noreply@yourdomain.com
+# Email
+FROM_EMAIL=noreply@yourdomain.com
 
 # Database (Prisma)
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+DATABASE_URL=postgresql://user:password@localhost:5433/broom_kit
 ```
 
-### 2. Route Protection
+### 2. Route Protection (Next.js 16 Proxy)
 
-#### Next.js Middleware
+In Next.js 16, `middleware.ts` is renamed to `proxy.ts`. The proxy handles
+**optimistic redirects only** — primary auth enforcement lives in Server layouts
+and server actions.
 
-Create a `middleware.ts` file in your Next.js app:
+#### proxy.ts setup
+
+Create a `proxy.ts` file in your Next.js app:
 
 ```typescript
-import { authMiddleware } from '@repo/auth';
+import { authProxy } from '@repo/auth/edge';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default authMiddleware;
+const innerProxy = authProxy({
+  publicRoutes: ['/', '/verify-email', '/reset-password'],
+  anonymousRoutes: ['/login', '/register', '/forgot-password'],
+  protectedRoutes: ['/dashboard/*', '/profile/*'],
+});
+
+export default async function proxy(request: NextRequest) {
+  return innerProxy(request);
+}
 
 export const config = {
-  matcher: [
-    // Protected routes
-    '/dashboard/:path*',
-    '/profile/:path*',
-    '/settings/:path*',
-    // Public routes (excluded)
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
 ```
 
-#### Custom Middleware Logic
+#### Server-side enforcement (required for defense-in-depth)
 
-You can customize the middleware behavior:
+The proxy performs cookie-based optimistic redirects but is **not** the security
+boundary. Enforce auth at the data layer in Server layouts and server actions:
 
 ```typescript
-import { authConfig } from '@repo/auth/config/auth.config';
-import NextAuth from 'next-auth';
+// app/(dashboard)/layout.tsx
+import { auth } from '@repo/auth';
+import { redirect } from 'next/navigation';
 
-const { auth } = NextAuth(authConfig);
+export default async function DashboardLayout({ children }) {
+  const session = await auth();
+  if (!session) redirect('/login');
+  return <>{children}</>;
+}
 
-export default auth((req) => {
-  const { nextUrl } = req;
-  const isLoggedIn = !!req.auth;
+// app/actions/example.ts
+'use server';
+import { getCurrentUser } from '@repo/auth';
 
-  // Custom logic
-  if (!isLoggedIn && nextUrl.pathname.startsWith('/dashboard')) {
-    return Response.redirect(new URL('/auth/login', nextUrl));
-  }
-
-  if (isLoggedIn && nextUrl.pathname === '/auth/login') {
-    return Response.redirect(new URL('/dashboard', nextUrl));
-  }
-
-  return null; // Continue to the next middleware/route
-});
+export async function myAction() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error('Unauthorized');
+  // ...
+}
 ```
 
 ### 3. Authorization with CASL
@@ -498,7 +504,8 @@ packages/auth/
 ├── src/
 │   ├── config/
 │   │   ├── auth.config.ts      # Auth.js configuration
-│   │   ├── auth.ts             # Auth.js instance
+│   │   ├── auth.edge.ts        # Edge-safe Auth.js instance (no DB adapter)
+│   │   ├── auth.ts             # Auth.js instance (full, with Prisma adapter)
 │   │   └── providers.ts        # Auth providers
 │   ├── permissions/
 │   │   ├── abilities.ts        # CASL ability definitions
@@ -508,7 +515,9 @@ packages/auth/
 │   │   ├── password.ts         # Password utilities
 │   │   ├── session.ts          # Session utilities
 │   │   └── token.ts            # Magic link token utilities
-│   ├── middleware.ts           # Next.js middleware
+│   ├── proxy.ts                # authProxy factory for Next.js 16 proxy.ts
+│   ├── edge.ts                 # Re-exports for proxy/edge runtime (@repo/auth/edge)
+│   ├── middleware.ts           # Backward-compat shim → proxy.ts (deprecated)
 │   ├── types.ts                # TypeScript type extensions
 │   └── index.ts                # Package exports
 ├── test/
@@ -618,10 +627,10 @@ If you encounter native module issues with bcrypt, the package automatically use
 
 ### "Unauthorized" errors
 
-Ensure your Auth.js environment variables are set correctly:
+Ensure your Auth.js environment variables are set correctly in `apps/web/.env.local`:
 
 ```bash
-NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:4000
 NEXTAUTH_SECRET=your-secret-key
 ```
 

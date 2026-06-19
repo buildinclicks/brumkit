@@ -1,6 +1,6 @@
 'use server';
 
-import { getCurrentUser } from '@repo/auth';
+import { auth, getCurrentUser } from '@repo/auth';
 import { db } from '@repo/database';
 import {
   updateUserProfileSchema,
@@ -13,7 +13,8 @@ import { ZodError } from 'zod';
 import type { ActionResult } from './auth';
 
 /**
- * User profile type
+ * User profile type.
+ * Note: `email` is only populated when retrieving the caller's own profile.
  */
 export interface UserProfile {
   id: string;
@@ -80,12 +81,19 @@ export async function getCurrentUserProfile(): Promise<
 }
 
 /**
- * Get user profile by ID
+ * Get user profile by ID.
+ * Requires authentication. Email is only returned when the caller is viewing
+ * their own profile to prevent PII leakage.
  */
 export async function getUserProfile(
   userId: string
 ): Promise<ActionResult<UserProfile>> {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
     const profile = await db.user.findUnique({
       where: { id: userId },
       select: {
@@ -107,10 +115,14 @@ export async function getUserProfile(
       };
     }
 
+    const isOwnProfile = session.user.id === userId;
+
     return {
       success: true,
       data: {
         ...profile,
+        // Omit email when viewing another user's profile
+        email: isOwnProfile ? profile.email : '',
         role: profile.role as string,
       },
     };

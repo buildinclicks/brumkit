@@ -1,3 +1,68 @@
+# BrumKit v2.0.1 — Enterprise Readiness Hardening
+
+**Release Date**: June 19, 2026  
+**Status**: Stable — Production Ready  
+**Git Tag**: `v2.0.1`  
+**GitHub Release**: [v2.0.1](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.1)
+
+---
+
+## Overview
+
+BrumKit v2.0.1 completes the Milestone 8 enterprise readiness pass. This patch release closes
+gaps between documented behaviour and actual implementation — no new features, but significant
+hardening of auth, environment configuration, deployment docs, and ops tooling.
+
+All linked `@repo/*` packages and the `web` app are bumped to **2.0.1**.
+
+---
+
+## What's New in v2.0.1
+
+### Next.js 16 proxy migration
+
+- `middleware.ts` replaced with `proxy.ts` per Next.js 16 convention
+- `@repo/auth` exports `authProxy` from `@repo/auth/edge`; `authMiddleware` is deprecated
+- Defense-in-depth: proxy for optimistic redirects; server layouts and actions enforce sessions
+
+### Environment configuration
+
+- Three env file locations documented: root (Docker), `packages/database/.env` (Prisma CLI), `apps/web/.env.local` (Next.js runtime)
+- Stale templates reconciled with canonical `.env.*.example` files
+
+### Security hardening
+
+- Login rate limiting wired through `useLogin` → `loginUser` server action
+- Soft-deleted user sessions invalidated on every `auth()` call
+- Server-side Zod validation in `changePassword` and `verifyEmail` actions
+- Register REST API hardened against email enumeration
+- Security headers in `next.config.js` (HSTS, X-Frame-Options, and more)
+
+### Ops & deployment
+
+- `/api/health` endpoint for Docker Compose healthchecks and load balancers
+- CI uses `db:migrate:deploy` instead of `db:push`
+- New deployment guides: [Self-hosting with Docker](docs/deployment/self-hosting-docker.md), [Vercel deployment](docs/deployment/vercel-deployment-guide.md)
+
+### Docs cleanup
+
+- `docs/development/upgrade-*.md` removed from public repo; migration notes remain in [CHANGELOG.md](CHANGELOG.md). Full per-package guides are preserved in the [v2.0.0 release tag](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.0).
+
+---
+
+## Upgrade from v2.0.0
+
+```bash
+git pull origin main
+pnpm install
+pnpm build
+pnpm test
+```
+
+Copy env to `apps/web/.env.local` if you have not already — see [README.md](README.md#getting-started).
+
+---
+
 # BrumKit v2.0.0 — Post-1.0 Major Upgrades
 
 **Release Date**: June 16, 2026  
@@ -40,27 +105,25 @@ Zod 4, and several other major dependency upgrades with migration guides for dow
 - `@prisma/adapter-pg` driver adapter in `packages/database/src/client.ts`.
 - Enums exported via `@repo/database/enums` for validation-only imports.
 - `prisma.config.ts` added for Prisma 7 configuration.
-- Migration guide: [`docs/development/upgrade-prisma-6-to-7.md`](docs/development/upgrade-prisma-6-to-7.md).
+- Migration guide: see [CHANGELOG.md](CHANGELOG.md#200---2026-06-16) and the [v2.0.0 release tag](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.0) for archived per-package upgrade docs.
 
 ### Zod 4 (M7)
 
 - `error.issues` replaces `error.errors` across server actions and validation helpers.
 - `z.enum()` replaces `z.nativeEnum()` for Prisma enums.
 - Custom error options use `{ error: ... }` instead of `required_error`.
-- Migration guide: [`docs/development/upgrade-zod-3-to-4.md`](docs/development/upgrade-zod-3-to-4.md).
+- Migration guide: see [CHANGELOG.md](CHANGELOG.md#200---2026-06-16).
 
 ### Next.js 16 + TypeScript 6 (M7)
 
 - Next.js upgraded to 16.2.x with App Router and Turbopack build.
 - `'use client'` added to shared UI modules that require client boundaries (`form`, `sonner`).
 - TypeScript 6.0.x with `Bundler` module resolution in shared presets.
-- Migration guides:
-  [`upgrade-next-15-to-16.md`](docs/development/upgrade-next-15-to-16.md),
-  [`upgrade-typescript-5-to-6.md`](docs/development/upgrade-typescript-5-to-6.md).
+- Migration notes in [CHANGELOG.md](CHANGELOG.md#200---2026-06-16); archived per-package guides in the [v2.0.0 release tag](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.0).
 
 ### Ecosystem majors (M7)
 
-- `@casl/ability` 7, `lucide-react` 1, `sonner` 2, `resend` 6 — each with a dedicated migration doc under `docs/development/`.
+- `@casl/ability` 7, `lucide-react` 1, `sonner` 2, `resend` 6 — migration notes in [CHANGELOG.md](CHANGELOG.md#200---2026-06-16); archived per-package guides in the [v2.0.0 release tag](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.0).
 
 ---
 
@@ -88,18 +151,18 @@ pnpm build
 pnpm test
 ```
 
-Review the per-package guides under `docs/development/upgrade-*.md` before merging into an existing fork.
+Review [CHANGELOG.md](CHANGELOG.md#200---2026-06-16) and the archived guides in the [v2.0.0 release tag](https://github.com/buildinclicks/brumkit/releases/tag/v2.0.0) before merging into an existing fork.
 
 ---
 
 ## Known Issues / Deferred Items
 
-| Item                | Status            | Notes                                                            |
-| ------------------- | ----------------- | ---------------------------------------------------------------- |
-| next-auth v5 stable | Deferred          | Still beta-only on npm; see `upgrade-nextauth-v5-stable.md`      |
-| README screenshots  | Deferred          | Section exists; full auth-flow and dashboard screenshots pending |
-| OAuth providers     | OSS edition scope | Google/GitHub OAuth available in Pro edition                     |
-| Admin dashboard UI  | Post-2.0          | Deferred to allow focus on core stability                        |
+| Item                | Status            | Notes                                                                     |
+| ------------------- | ----------------- | ------------------------------------------------------------------------- |
+| next-auth v5 stable | Deferred          | Still beta-only on npm; see [CHANGELOG.md](CHANGELOG.md#200---2026-06-16) |
+| README screenshots  | Deferred          | Section exists; full auth-flow and dashboard screenshots pending          |
+| OAuth providers     | OSS edition scope | Google/GitHub OAuth available in Pro edition                              |
+| Admin dashboard UI  | Post-2.0          | Deferred to allow focus on core stability                                 |
 
 ---
 

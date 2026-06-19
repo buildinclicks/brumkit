@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-06-19
+
+> **Enterprise readiness hardening (Milestone 8).** Closes gaps between documented behaviour
+> and actual implementation: Next.js 16 proxy migration, env configuration docs, security
+> fixes, deployment guides, and ops improvements.
+
+### Added
+
+- `apps/web/proxy.ts` — Next.js 16 route guard replacing deprecated `middleware.ts`
+- `packages/auth/src/proxy.ts` — `authProxy` factory exported via `@repo/auth/edge`
+- `/api/health` endpoint for Docker Compose healthchecks and load balancers
+- Security headers in `next.config.js` (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
+- Deployment guides: `docs/deployment/self-hosting-docker.md`, `docs/deployment/vercel-deployment-guide.md`
+- Three-location env setup documented in README, CONTRIBUTING, and `apps/web/README.md`
+
+### Changed
+
+- `useLogin` hook now calls `loginUser` server action before `signIn` to enforce Redis rate limits
+- Auth.js session callback re-checks soft-deleted users on every `auth()` call
+- `changePassword` and `verifyEmail` actions validate input with Zod schemas server-side
+- Register REST API returns generic conflict response to prevent email enumeration
+- CI test job uses `db:migrate:deploy` instead of `db:push`
+- Docker Compose healthcheck uses `nc` (available in node:alpine)
+- Reconciled env templates: `apps/web/env.template`, `packages/database/.env.example`, test env template, `.env.production.example`
+
+### Removed
+
+- `apps/web/middleware.ts` and `middleware.test.ts` (replaced by `proxy.ts`)
+- `docs/development/upgrade-*.md` from public repo (migration notes preserved here and in RELEASE_NOTES.md; full guides remain in the v2.0.0 release tag)
+
+### Contributors
+
+- [@pukhrajp](https://github.com/pukhrajp) — Enterprise readiness audit and fixes
+
 ## [2.0.0] - 2026-06-16
 
 > **Post-1.0 major upgrades (Milestone 7).** BrumKit v2.0.0 upgrades the core stack to

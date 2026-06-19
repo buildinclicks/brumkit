@@ -1,9 +1,9 @@
-import { authMiddleware } from '@repo/auth/edge';
+import { authProxy } from '@repo/auth/edge';
 import { NextResponse } from 'next/server';
 
 import type { NextRequest } from 'next/server';
 
-const innerMiddleware = authMiddleware({
+const innerProxy = authProxy({
   publicRoutes: [
     '/',
     '/verify-email',
@@ -19,7 +19,7 @@ const innerMiddleware = authMiddleware({
   ],
 });
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Admin pages are not implemented in this OSS release.
@@ -28,19 +28,18 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
-  return innerMiddleware(request);
+  return innerProxy(request);
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (authentication API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
+     * Match all request paths EXCEPT:
+     * - api/*           (all API routes handle their own auth)
+     * - _next/static    (static assets)
+     * - _next/image     (image optimisation)
+     * - favicon.ico     (browser favicon)
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
