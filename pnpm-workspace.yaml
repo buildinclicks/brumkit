@@ -11,7 +11,7 @@ catalog:
 
   # TypeScript
   typescript: ^6.0.3
-  '@types/node': ^25.9.3
+  '@types/node': ^26.0.0
 
   # Styling
   tailwindcss: ^4.3.1
@@ -20,7 +20,7 @@ catalog:
   zod: ^4.4.3
 
   # Forms
-  react-hook-form: ^7.79.0
+  react-hook-form: ^7.80.0
   '@hookform/resolvers': ^5.4.0
 
   # Notifications
@@ -36,7 +36,7 @@ catalog:
 
   # Build tool (peer dep for vitest/vitejs-plugin-react)
   # Vite v8 is a major bump; keep on v7 until M7 or a dedicated upgrade PR
-  vite: ^7.3.5
+  vite: ^8.0.16
 
   # Redis
   ioredis: ^5.11.1
